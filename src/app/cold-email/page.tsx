@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { PillSelect } from "@/components/pill-select";
 import { Copy, RefreshCw, Loader2, Lightbulb } from "lucide-react";
+import { MarkdownOutput } from "@/components/markdown-output";
 import { generateWithAI } from "@/lib/ai";
 import { checkRateLimit, incrementUsage } from "@/lib/rate-limit";
 import { COLD_EMAIL_SYSTEM_PROMPT, buildColdEmailPrompt } from "@/prompts/cold-email";
@@ -203,7 +204,7 @@ export default function ColdEmailPage() {
       {output && (
         <div className="mt-6 space-y-3">
           <div className="rounded-lg border border-border bg-card p-5">
-            <pre className="whitespace-pre-wrap text-sm leading-relaxed font-sans">{emailBody}</pre>
+            <MarkdownOutput content={emailBody} />
           </div>
 
           <div className="flex items-center gap-2">
@@ -220,7 +221,7 @@ export default function ColdEmailPage() {
           {insights && (
             <div className="flex gap-2.5 rounded-lg bg-muted/50 p-3.5 text-xs text-muted-foreground">
               <Lightbulb className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-              <pre className="whitespace-pre-wrap font-sans leading-relaxed">{insights}</pre>
+              <MarkdownOutput content={insights} />
             </div>
           )}
         </div>

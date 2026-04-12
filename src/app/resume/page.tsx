@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { PillSelect } from "@/components/pill-select";
 import { Copy, RefreshCw, Loader2, Lightbulb } from "lucide-react";
+import { MarkdownOutput } from "@/components/markdown-output";
 import { generateWithAI } from "@/lib/ai";
 import { checkRateLimit, incrementUsage } from "@/lib/rate-limit";
 import { RESUME_SYSTEM_PROMPT, buildResumePrompt } from "@/prompts/resume";
@@ -120,7 +121,7 @@ export default function ResumePage() {
       {output && (
         <div className="mt-6 space-y-3">
           <div className="rounded-lg border border-border bg-card p-5 max-h-[600px] overflow-y-auto">
-            <pre className="whitespace-pre-wrap text-sm leading-relaxed font-sans">{output}</pre>
+            <MarkdownOutput content={output} />
           </div>
 
           <div className="flex items-center gap-2">
