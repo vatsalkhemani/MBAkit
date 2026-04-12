@@ -72,8 +72,8 @@ export default function ThankYouPage() {
       setError("Daily limit reached. Come back tomorrow.");
       return;
     }
-    if (!recipientName || !discussed) {
-      setError("Fill in at least the recipient's name and what you discussed.");
+    if (!recipientName) {
+      setError("Fill in at least the recipient's name.");
       return;
     }
 

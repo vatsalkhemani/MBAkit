@@ -70,8 +70,8 @@ export default function ColdEmailPage() {
       setError(`Daily limit reached (${remaining} remaining). Come back tomorrow.`);
       return;
     }
-    if (!recipientName || !recipientRole || !recipientCompany) {
-      setError("Fill in at least the recipient's name, role, and company.");
+    if (!recipientName || !recipientCompany) {
+      setError("Fill in at least the recipient's name and company.");
       return;
     }
 
