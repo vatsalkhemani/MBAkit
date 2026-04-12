@@ -1,0 +1,61 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link "MBAKit" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e5]:
+        - link "Cold Email" [ref=e6] [cursor=pointer]:
+          - /url: /cold-email
+        - link "Thank You" [ref=e7] [cursor=pointer]:
+          - /url: /thank-you
+        - link "Resume" [ref=e8] [cursor=pointer]:
+          - /url: /resume
+        - link "STAR Story" [ref=e9] [cursor=pointer]:
+          - /url: /star
+        - link "About" [ref=e10] [cursor=pointer]:
+          - /url: /about
+      - button "Toggle theme" [ref=e12]:
+        - img
+  - main [ref=e13]:
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - heading "The MBA Toolkit" [level=1] [ref=e16]
+        - paragraph [ref=e17]: Sharp tools for the repetitive stuff. So you can focus on what matters.
+        - paragraph [ref=e18]: No sign-up. No paywall. Just use it.
+      - generic [ref=e19]:
+        - link "Cold Email Generator Write cold emails that actually get replies. Short, specific, and human. Use it →" [ref=e20] [cursor=pointer]:
+          - /url: /cold-email
+          - generic [ref=e21]:
+            - img [ref=e23]
+            - generic [ref=e26]:
+              - heading "Cold Email Generator" [level=2] [ref=e27]
+              - paragraph [ref=e28]: Write cold emails that actually get replies. Short, specific, and human.
+              - generic [ref=e29]: Use it →
+        - link "Thank You Note Writer Send the perfect follow-up within 24 hours. Specific, warm, and memorable. Use it →" [ref=e30] [cursor=pointer]:
+          - /url: /thank-you
+          - generic [ref=e31]:
+            - img [ref=e33]
+            - generic [ref=e35]:
+              - heading "Thank You Note Writer" [level=2] [ref=e36]
+              - paragraph [ref=e37]: Send the perfect follow-up within 24 hours. Specific, warm, and memorable.
+              - generic [ref=e38]: Use it →
+        - link "Resume Bullet Sharpener Turn vague bullets into quantified, impactful statements that land interviews. Use it →" [ref=e39] [cursor=pointer]:
+          - /url: /resume
+          - generic [ref=e40]:
+            - img [ref=e42]
+            - generic [ref=e45]:
+              - heading "Resume Bullet Sharpener" [level=2] [ref=e46]
+              - paragraph [ref=e47]: Turn vague bullets into quantified, impactful statements that land interviews.
+              - generic [ref=e48]: Use it →
+        - link "STAR Story Builder Structure your experiences into compelling behavioral interview stories. Use it →" [ref=e49] [cursor=pointer]:
+          - /url: /star
+          - generic [ref=e50]:
+            - img [ref=e52]
+            - generic [ref=e54]:
+              - heading "STAR Story Builder" [level=2] [ref=e55]
+              - paragraph [ref=e56]: Structure your experiences into compelling behavioral interview stories.
+              - generic [ref=e57]: Use it →
+  - contentinfo [ref=e58]: Built by Vatsal Khemani, Wharton '28
+  - button "Open Next.js Dev Tools" [ref=e64] [cursor=pointer]:
+    - img [ref=e65]
+  - alert [ref=e68]

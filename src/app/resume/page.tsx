@@ -4,20 +4,29 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Copy, RefreshCw, Loader2, ChevronDown } from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { PillSelect } from "@/components/pill-select";
+import { Copy, RefreshCw, Loader2, Lightbulb } from "lucide-react";
 import { generateWithAI } from "@/lib/ai";
 import { checkRateLimit, incrementUsage } from "@/lib/rate-limit";
 import { RESUME_SYSTEM_PROMPT, buildResumePrompt } from "@/prompts/resume";
 
 const TOOL_NAME = "resume";
+
+const roleOptions = [
+  { label: "Tech PM", value: "tech PM" },
+  { label: "Consulting", value: "consulting" },
+  { label: "Finance", value: "finance" },
+  { label: "General Mgmt", value: "general management" },
+  { label: "Marketing", value: "marketing" },
+  { label: "Ops / Strategy", value: "ops/strategy" },
+];
+
+const goalOptions = [
+  { label: "Sharpen existing", value: "sharpen existing" },
+  { label: "More concise", value: "make more concise" },
+  { label: "Add numbers", value: "add quantification" },
+  { label: "Tailor for industry", value: "tailor for industry" },
+];
 
 export default function ResumePage() {
   const [bullets, setBullets] = useState("");
@@ -68,122 +77,71 @@ export default function ResumePage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Resume Bullet Sharpener</h1>
-        <p className="mt-2 text-muted-foreground">
-          Turn vague bullets into quantified, impactful statements. Diagnosis + 3 improved versions per bullet.
+    <div className="mx-auto max-w-3xl px-4 py-10">
+      <div className="mb-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold tracking-tight">Resume Bullet Sharpener</h1>
+          <button onClick={loadExample} className="text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground transition-colors">
+            Load example
+          </button>
+        </div>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Diagnosis + 3 improved versions per bullet, ranked from safe to strongest.
         </p>
-        <button onClick={loadExample} className="mt-2 text-sm text-primary underline underline-offset-4 hover:text-primary/80 transition-colors">
-          Load example to see how it works
-        </button>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="bullets">Paste your resume bullets (1-5, one per line)</Label>
-            <Textarea
-              id="bullets"
-              placeholder={"e.g.\nManaged a cross-functional team to deliver a new product feature\nHelped improve customer retention through data analysis\nWorked on the company's pricing strategy"}
-              value={bullets}
-              onChange={(e) => setBullets(e.target.value)}
-              rows={6}
-            />
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <Label>Target role/industry (optional)</Label>
-              <Select value={targetRole} onValueChange={(v) => v && setTargetRole(v)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="tech PM">Tech PM</SelectItem>
-                  <SelectItem value="consulting">Consulting</SelectItem>
-                  <SelectItem value="finance">Finance</SelectItem>
-                  <SelectItem value="general management">General Management</SelectItem>
-                  <SelectItem value="marketing">Marketing</SelectItem>
-                  <SelectItem value="ops/strategy">Ops / Strategy</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>What you want</Label>
-              <Select value={goal} onValueChange={(v) => v && setGoal(v)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sharpen existing">Sharpen existing</SelectItem>
-                  <SelectItem value="make more concise">Make more concise</SelectItem>
-                  <SelectItem value="add quantification">Add quantification</SelectItem>
-                  <SelectItem value="tailor for industry">Tailor for industry</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <Button onClick={handleGenerate} disabled={loading} className="w-full">
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Analyzing...
-              </>
-            ) : (
-              "Sharpen Bullets"
-            )}
-          </Button>
-        </div>
-
+      <div className="space-y-4">
         <div>
-          {error && (
-            <div role="alert" className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
-              {error}
-            </div>
-          )}
-
-          {output && (
-            <div className="space-y-4">
-              <div className="rounded-lg border border-border bg-card p-6 max-h-[600px] overflow-y-auto">
-                <pre className="whitespace-pre-wrap text-sm leading-relaxed font-sans">
-                  {output}
-                </pre>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={handleCopy}>
-                  <Copy className="mr-2 h-3.5 w-3.5" />
-                  {copied ? "Copied!" : "Copy all"}
-                </Button>
-                <Button variant="outline" size="sm" onClick={handleGenerate} disabled={loading}>
-                  <RefreshCw className="mr-2 h-3.5 w-3.5" />
-                  Try again
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {!output && !error && (
-            <div className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-              Your sharpened bullets will appear here with diagnosis and improved versions.
-            </div>
-          )}
-
-          <Collapsible className="mt-6">
-            <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              <ChevronDown className="h-4 w-4" />
-              Tips for great resume bullets
-            </CollapsibleTrigger>
-            <CollapsibleContent className="mt-3 space-y-2 text-sm text-muted-foreground">
-              <p>Use the XYZ formula: Accomplished [X] as measured by [Y] by doing [Z].</p>
-              <p>Lead with a strong action verb. &quot;Built&quot; and &quot;Led&quot; beat &quot;Responsible for.&quot;</p>
-              <p>Quantify everything. Numbers, percentages, dollar amounts, users affected.</p>
-              <p>One line per bullet. If it&apos;s two lines, split it or cut.</p>
-            </CollapsibleContent>
-          </Collapsible>
+          <Label htmlFor="bullets" className="text-xs">Your resume bullets (1-5, one per line)</Label>
+          <Textarea
+            id="bullets"
+            placeholder={"Managed a cross-functional team to deliver a new product feature\nHelped improve customer retention through data analysis\nWorked on the company's pricing strategy"}
+            value={bullets}
+            onChange={(e) => setBullets(e.target.value)}
+            rows={4}
+            className="resize-none"
+          />
         </div>
+
+        <PillSelect label="Target role" value={targetRole} onChange={setTargetRole} options={roleOptions} />
+        <PillSelect label="What you want" value={goal} onChange={setGoal} options={goalOptions} />
+
+        <Button onClick={handleGenerate} disabled={loading} className="w-full">
+          {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Analyzing...</> : "Sharpen Bullets"}
+        </Button>
       </div>
+
+      {error && (
+        <div role="alert" className="mt-4 rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+          {error}
+        </div>
+      )}
+
+      {output && (
+        <div className="mt-6 space-y-3">
+          <div className="rounded-lg border border-border bg-card p-5 max-h-[600px] overflow-y-auto">
+            <pre className="whitespace-pre-wrap text-sm leading-relaxed font-sans">{output}</pre>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={handleCopy}>
+              <Copy className="mr-1.5 h-3.5 w-3.5" />
+              {copied ? "Copied!" : "Copy all"}
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleGenerate} disabled={loading}>
+              <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+              Try again
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {!output && !error && !loading && (
+        <div className="mt-6 flex items-center gap-2 text-xs text-muted-foreground">
+          <Lightbulb className="h-3.5 w-3.5 shrink-0" />
+          <span>Use the XYZ formula: Accomplished [X] as measured by [Y] by doing [Z]. Lead with a strong verb, quantify everything.</span>
+        </div>
+      )}
     </div>
   );
 }

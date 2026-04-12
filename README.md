@@ -63,7 +63,7 @@ Open [http://localhost:3000](http://localhost:3000) and you're ready to go.
 |-------|--------|
 | **Framework** | Next.js 16 (App Router), React 19, TypeScript |
 | **Styling** | Tailwind CSS v4, shadcn/ui |
-| **AI** | Google Gemini 2.0 Flash Lite (free tier) |
+| **AI** | Google Gemini 3.1 Flash Lite (free tier) |
 | **Hosting** | Vercel (free tier) |
 | **Auth** | None (zero friction by design) |
 | **Database** | None (stateless tools, localStorage for preferences) |
@@ -76,7 +76,7 @@ For detailed technical documentation, see [ARCHITECTURE.md](./ARCHITECTURE.md).
 
 MBAKit is designed to cost essentially nothing to run:
 
-- **Gemini Flash Lite free tier** covers the first 50-100 daily active users at zero cost
+- **Gemini 3.1 Flash Lite free tier** covers the first 50-100 daily active users at zero cost
 - **Client-side rate limiting** (20 uses/tool/day) prevents abuse
 - If the free tier is exceeded, a friendly message appears and expert tips remain visible
 - Estimated cost at full Wharton class scale (~900 users): ~$80/month

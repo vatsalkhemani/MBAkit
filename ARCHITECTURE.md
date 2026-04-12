@@ -20,7 +20,7 @@ src/
 │   ├── resume/page.tsx         # Resume Bullet Sharpener
 │   ├── star/page.tsx           # STAR Story Builder
 │   └── api/
-│       └── generate/route.ts   # AI proxy endpoint (Gemini Flash)
+│       └── generate/route.ts   # AI proxy endpoint (Gemini 3.1 Flash Lite)
 ├── components/
 │   ├── navbar.tsx              # Navigation with mobile menu + theme toggle
 │   ├── theme-provider.tsx      # next-themes wrapper

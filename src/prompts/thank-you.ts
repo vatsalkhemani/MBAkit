@@ -45,7 +45,7 @@ BAD:
 (Why it's bad: Zero specifics. Could be sent to anyone. "Incredibly valuable" is empty flattery.)
 
 GOOD:
-"Hi Sarah, Your point about how Stripe's PM org evaluates platform bets vs. product bets was exactly the framing I was missing — I've been thinking about that tradeoff all wrong. Also, the Ben Thompson piece you mentioned on aggregation theory is next on my reading list. I'll reach out to James on the payments team like you suggested. Thanks again for the conversation. Best, Vatsal"
+"Hi Sarah, Your point about how Stripe's PM org evaluates platform bets vs. product bets was exactly the framing I was missing. I've been thinking about that tradeoff all wrong. Also, the Ben Thompson piece you mentioned on aggregation theory is next on my reading list. I'll reach out to James on the payments team like you suggested. Thanks again for the conversation. Best, Vatsal"
 (Why it's good: References two specific things discussed. Takes an action she suggested. Adds the article as a shared reference point. She remembers THIS conversation.)
 
 Context: Post-info-session at a consulting firm
@@ -54,7 +54,7 @@ BAD:
 "Dear Hiring Team, Thank you for the informative session about Bain's culture and values. I was impressed by the firm's commitment to results. I look forward to the opportunity to interview. Best regards, Vatsal"
 
 GOOD:
-"Hi Amanda, Your example about the telco client who almost killed the project over the org chart — and how your team reframed it as a capability question instead — stuck with me. That's the kind of reframe I try to bring to ambiguous problems. Looking forward to the first round next week. Best, Vatsal"
+"Hi Amanda, Your example about the telco client who almost killed the project over the org chart, and how your team reframed it as a capability question instead, stuck with me. That's the kind of reframe I try to bring to ambiguous problems. Looking forward to the first round next week. Best, Vatsal"
 (Why it's good: References a SPECIFIC story from the session. Connects it to her own skill. Stands out from the 40 generic notes Amanda will get.)
 
 ## OUTPUT FORMAT

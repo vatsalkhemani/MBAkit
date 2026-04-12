@@ -1,0 +1,83 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link "MBAKit" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e5]:
+        - link "Cold Email" [ref=e6] [cursor=pointer]:
+          - /url: /cold-email
+        - link "Thank You" [ref=e7] [cursor=pointer]:
+          - /url: /thank-you
+        - link "Resume" [ref=e8] [cursor=pointer]:
+          - /url: /resume
+        - link "STAR Story" [ref=e9] [cursor=pointer]:
+          - /url: /star
+        - link "About" [ref=e10] [cursor=pointer]:
+          - /url: /about
+  - main [ref=e11]:
+    - generic [ref=e12]:
+      - generic [ref=e13]:
+        - heading "Cold Email Generator" [level=1] [ref=e14]
+        - paragraph [ref=e15]: Write cold emails that actually get replies. Short, specific, and human.
+        - button "Load example to see how it works" [ref=e16]
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - generic [ref=e19]:
+            - generic [ref=e20]:
+              - generic [ref=e21]: Your name
+              - textbox "Your name" [ref=e22]:
+                - /placeholder: e.g. Vatsal Khemani
+            - generic [ref=e23]:
+              - generic [ref=e24]: School
+              - textbox "School" [ref=e25]:
+                - /placeholder: e.g. Wharton MBA '28
+          - generic [ref=e26]:
+            - generic [ref=e27]:
+              - generic [ref=e28]: Recipient name
+              - textbox "Recipient name" [ref=e29]:
+                - /placeholder: e.g. Sarah Chen
+            - generic [ref=e30]:
+              - generic [ref=e31]: Their role
+              - textbox "Their role" [ref=e32]:
+                - /placeholder: e.g. Senior PM
+            - generic [ref=e33]:
+              - generic [ref=e34]: Company
+              - textbox "Company" [ref=e35]:
+                - /placeholder: e.g. Stripe
+          - generic [ref=e36]:
+            - generic [ref=e37]:
+              - generic [ref=e38]: How you found them
+              - combobox [ref=e39]:
+                - generic [ref=e40]: alumni network
+                - img: ▼
+              - textbox [ref=e41]: alumni network
+            - generic [ref=e42]:
+              - generic [ref=e43]: Detail (optional)
+              - textbox "Detail (optional)" [ref=e44]:
+                - /placeholder: e.g. referred by John Doe
+          - generic [ref=e45]:
+            - generic [ref=e46]:
+              - generic [ref=e47]: What you want
+              - combobox [ref=e48]:
+                - generic [ref=e49]: coffee chat
+                - img: ▼
+              - textbox [ref=e50]: coffee chat
+            - generic [ref=e51]:
+              - generic [ref=e52]: Tone
+              - combobox [ref=e53]:
+                - generic [ref=e54]: warm-professional
+                - img: ▼
+              - textbox [ref=e55]: warm-professional
+          - generic [ref=e56]:
+            - generic [ref=e57]: Something specific about them (optional)
+            - textbox "Something specific about them (optional)" [ref=e58]:
+              - /placeholder: e.g. Moved from McKinsey to product at Stripe last year. Wrote a blog post about building payments infrastructure.
+          - button "Generate Email" [ref=e59]
+        - generic [ref=e60]:
+          - generic [ref=e61]: Your generated email will appear here.
+          - button "Tips for great cold emails" [ref=e63]:
+            - img [ref=e64]
+            - text: Tips for great cold emails
+  - contentinfo [ref=e66]: Built by Vatsal Khemani, Wharton '28
+  - button "Open Next.js Dev Tools" [ref=e72] [cursor=pointer]:
+    - img [ref=e73]
