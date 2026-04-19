@@ -21,6 +21,7 @@ const contextOptions = [
   { label: "Info session", value: "info session" },
   { label: "Networking event", value: "networking event" },
   { label: "Class speaker", value: "class speaker" },
+  { label: "Follow-up after intro", value: "follow-up after intro" },
   { label: "Other", value: "other" },
 ];
 
@@ -37,6 +38,7 @@ const toneDefaults: Record<string, string> = {
   "info session": "warm-professional",
   "networking event": "warm",
   "class speaker": "warm-professional",
+  "follow-up after intro": "warm",
   other: "warm-professional",
 };
 
@@ -101,7 +103,7 @@ export default function ThankYouPage() {
         followUp,
         tone,
       });
-      const result = await generateWithAI(THANK_YOU_SYSTEM_PROMPT, prompt);
+      const result = await generateWithAI(THANK_YOU_SYSTEM_PROMPT, prompt, setOutput);
       setOutput(result);
       incrementUsage(TOOL_NAME);
     } catch (e) {
@@ -136,7 +138,7 @@ export default function ThankYouPage() {
       </div>
 
       <div className="space-y-4">
-        <div className="grid gap-3 grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-3 grid-cols-1">
           <div>
             <Label htmlFor="senderName" className="text-xs">Your name</Label>
             <Input id="senderName" placeholder="Vatsal Khemani" value={senderName} onChange={(e) => setSenderName(e.target.value)} className="h-9" />

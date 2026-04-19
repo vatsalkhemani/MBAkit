@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, Heart, FileText, MessageSquare } from "lucide-react";
+import { Mail, Heart, FileText, MessageSquare, Coffee } from "lucide-react";
 
 const tools = [
   {
@@ -26,6 +26,12 @@ const tools = [
     href: "/star",
     icon: MessageSquare,
   },
+  {
+    name: "Coffee Chat Prep",
+    description: "Smart questions that show you did your homework. Walk in confident, leave memorable.",
+    href: "/coffee-chat",
+    icon: Coffee,
+  },
 ];
 
 export default function Home() {
@@ -41,25 +47,25 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="mt-16 grid gap-6 sm:grid-cols-2">
+      <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {tools.map((tool) => (
           <Link
             key={tool.href}
             href={tool.href}
-            className="group relative rounded-xl border border-border/60 bg-card p-6 transition-all hover:border-foreground/20 hover:shadow-lg"
+            className="group relative rounded-xl border border-border/60 bg-card p-5 transition-all hover:border-foreground/20 hover:shadow-lg"
           >
-            <div className="flex items-start gap-4">
-              <div className="rounded-lg bg-primary/10 p-2.5">
-                <tool.icon className="h-5 w-5 text-primary" />
+            <div className="flex items-start gap-3.5">
+              <div className="rounded-lg bg-primary/10 p-2">
+                <tool.icon className="h-4 w-4 text-primary" />
               </div>
-              <div className="flex-1">
-                <h2 className="font-semibold text-lg group-hover:text-primary transition-colors">
+              <div className="flex-1 min-w-0">
+                <h2 className="font-semibold group-hover:text-primary transition-colors">
                   {tool.name}
                 </h2>
-                <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+                <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
                   {tool.description}
                 </p>
-                <span className="mt-3 inline-block text-sm font-medium text-primary">
+                <span className="mt-2.5 inline-block text-sm font-medium text-primary">
                   Use it &rarr;
                 </span>
               </div>

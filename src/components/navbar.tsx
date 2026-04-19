@@ -13,6 +13,7 @@ const tools = [
   { name: "Thank You", href: "/thank-you" },
   { name: "Resume", href: "/resume" },
   { name: "STAR Story", href: "/star" },
+  { name: "Chat Prep", href: "/coffee-chat" },
 ];
 
 export function Navbar() {

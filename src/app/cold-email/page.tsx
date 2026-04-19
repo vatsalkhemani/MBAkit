@@ -108,7 +108,7 @@ export default function ColdEmailPage() {
         personalDetail,
         tone,
       });
-      const result = await generateWithAI(COLD_EMAIL_SYSTEM_PROMPT, prompt);
+      const result = await generateWithAI(COLD_EMAIL_SYSTEM_PROMPT, prompt, setOutput);
       setOutput(result);
       incrementUsage(TOOL_NAME);
     } catch (e) {
@@ -143,7 +143,7 @@ export default function ColdEmailPage() {
       </div>
 
       <div className="space-y-4">
-        <div className="grid gap-3 grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2 grid-cols-1">
           <div>
             <Label htmlFor="senderName" className="text-xs">Your name</Label>
             <Input id="senderName" placeholder="Vatsal Khemani" value={senderName} onChange={(e) => setSenderName(e.target.value)} className="h-9" />
@@ -154,7 +154,7 @@ export default function ColdEmailPage() {
           </div>
         </div>
 
-        <div className="grid gap-3 grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-3 grid-cols-1">
           <div>
             <Label htmlFor="recipientName" className="text-xs">Recipient name *</Label>
             <Input id="recipientName" placeholder="Sarah Chen" value={recipientName} onChange={(e) => setRecipientName(e.target.value)} className="h-9" />

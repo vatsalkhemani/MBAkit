@@ -61,7 +61,7 @@ export default function ResumePage() {
 
     try {
       const prompt = buildResumePrompt({ bullets, targetRole, goal });
-      const result = await generateWithAI(RESUME_SYSTEM_PROMPT, prompt);
+      const result = await generateWithAI(RESUME_SYSTEM_PROMPT, prompt, setOutput);
       setOutput(result);
       incrementUsage(TOOL_NAME);
     } catch (e) {

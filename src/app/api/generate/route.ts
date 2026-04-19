@@ -1,23 +1,23 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
     const { systemPrompt, userMessage } = await req.json();
 
     if (!systemPrompt || !userMessage) {
-      return NextResponse.json({ error: "Missing prompt or message" }, { status: 400 });
+      return Response.json({ error: "Missing prompt or message" }, { status: 400 });
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return NextResponse.json(
+      return Response.json(
         { error: "API key not configured. Add GEMINI_API_KEY to your .env.local file." },
         { status: 500 }
       );
     }
 
     const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:streamGenerateContent?alt=sse&key=${apiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
           system_instruction: { parts: [{ text: systemPrompt }] },
           contents: [{ parts: [{ text: userMessage }] }],
           generationConfig: {
-            temperature: 0.8,
+            temperature: 0.65,
             maxOutputTokens: 2048,
           },
         }),
@@ -39,19 +39,57 @@ export async function POST(req: NextRequest) {
           ? "Lots of people using MBAKit right now. Try again in a few minutes."
           : "Something went wrong with the AI. Try again?";
       console.error("Gemini API error:", err);
-      return NextResponse.json({ error: message }, { status: res.status });
+      return Response.json({ error: message }, { status: res.status });
     }
 
-    const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    // Stream the SSE response back to the client as plain text chunks
+    const stream = new ReadableStream({
+      async start(controller) {
+        const reader = res.body!.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
 
-    if (!text) {
-      return NextResponse.json({ error: "No response generated. Try again?" }, { status: 500 });
-    }
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
 
-    return NextResponse.json({ text });
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split("\n");
+            buffer = lines.pop() || "";
+
+            for (const line of lines) {
+              if (!line.startsWith("data: ")) continue;
+              const jsonStr = line.slice(6).trim();
+              if (!jsonStr || jsonStr === "[DONE]") continue;
+
+              try {
+                const parsed = JSON.parse(jsonStr);
+                const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (text) {
+                  controller.enqueue(new TextEncoder().encode(text));
+                }
+              } catch {
+                // skip malformed chunks
+              }
+            }
+          }
+        } catch (e) {
+          console.error("Stream error:", e);
+        } finally {
+          controller.close();
+        }
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Transfer-Encoding": "chunked",
+      },
+    });
   } catch (e) {
     console.error("Generate error:", e);
-    return NextResponse.json({ error: "Something went wrong. Try again?" }, { status: 500 });
+    return Response.json({ error: "Something went wrong. Try again?" }, { status: 500 });
   }
 }

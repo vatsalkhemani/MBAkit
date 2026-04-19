@@ -28,6 +28,7 @@ const competencyOptions = [
 const interviewOptions = [
   { label: "Tech PM", value: "tech PM" },
   { label: "Consulting", value: "consulting" },
+  { label: "Amazon LP", value: "Amazon Leadership Principles" },
   { label: "General Mgmt", value: "general management" },
   { label: "Other", value: "other" },
 ];
@@ -64,7 +65,7 @@ export default function StarPage() {
 
     try {
       const prompt = buildStarPrompt({ rawStory, competency, interviewType });
-      const result = await generateWithAI(STAR_SYSTEM_PROMPT, prompt);
+      const result = await generateWithAI(STAR_SYSTEM_PROMPT, prompt, setOutput);
       setOutput(result);
       incrementUsage(TOOL_NAME);
     } catch (e) {
