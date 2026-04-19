@@ -36,7 +36,11 @@ export default function RootLayout({
           <Navbar />
           <main className="flex-1">{children}</main>
           <footer className="border-t border-border/50 py-6 text-center text-sm text-muted-foreground">
-            Built by Vatsal Khemani, Wharton &apos;28
+            Built by{" "}
+              <a href="https://www.linkedin.com/in/vatsal-khemani-39a483192" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-foreground transition-colors">
+                Vatsal Khemani
+              </a>
+              , Wharton &apos;28
           </footer>
         </ThemeProvider>
       </body>

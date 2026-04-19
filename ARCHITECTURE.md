@@ -2,7 +2,7 @@
 
 ## Overview
 
-MBAKit is a Next.js 16 application using the App Router pattern. It's intentionally simple: a static frontend with one API route that proxies AI calls. No database, no auth, no backend complexity.
+MBAKit is a Next.js 16 application using the App Router pattern. It's intentionally simple: a static frontend with one API route that proxies AI calls with streaming. No database, no auth, no backend complexity.
 
 ---
 
@@ -19,21 +19,25 @@ src/
 │   ├── thank-you/page.tsx      # Thank You Note Writer
 │   ├── resume/page.tsx         # Resume Bullet Sharpener
 │   ├── star/page.tsx           # STAR Story Builder
+│   ├── coffee-chat/page.tsx    # Coffee Chat Prep
 │   └── api/
-│       └── generate/route.ts   # AI proxy endpoint (Gemini 3.1 Flash Lite)
+│       └── generate/route.ts   # Streaming AI proxy endpoint (Gemini 3.1 Flash Lite)
 ├── components/
 │   ├── navbar.tsx              # Navigation with mobile menu + theme toggle
+│   ├── pill-select.tsx         # Pill-shaped button group for single-select options
+│   ├── markdown-output.tsx     # React Markdown renderer for AI output
 │   ├── theme-provider.tsx      # next-themes wrapper
 │   └── ui/                     # shadcn/ui components (button, card, input, etc.)
 ├── lib/
-│   ├── ai.ts                   # Client-side fetch wrapper for /api/generate
+│   ├── ai.ts                   # Client-side streaming fetch wrapper for /api/generate
 │   ├── rate-limit.ts           # localStorage-based daily rate limiting
 │   └── utils.ts                # cn() utility for Tailwind class merging
 └── prompts/
     ├── cold-email.ts           # System prompt + input builder for cold emails
     ├── thank-you.ts            # System prompt + input builder for thank-you notes
     ├── resume.ts               # System prompt + input builder for resume bullets
-    └── star.ts                 # System prompt + input builder for STAR stories
+    ├── star.ts                 # System prompt + input builder for STAR stories
+    └── coffee-chat.ts          # System prompt + input builder for coffee chat prep
 ```
 
 ---
@@ -45,17 +49,17 @@ src/
 ```
 User fills form → clicks Generate
     ↓
-Tool page calls generateWithAI() (src/lib/ai.ts)
+Tool page calls generateWithAI(systemPrompt, userMessage, onChunk)
     ↓
 Client-side rate limit check (src/lib/rate-limit.ts)
     ↓
 POST /api/generate with { systemPrompt, userMessage }
     ↓
-API route (src/app/api/generate/route.ts)
+API route streams from Gemini (streamGenerateContent?alt=sse)
     ↓
-Gemini Flash API (generativelanguage.googleapis.com)
+SSE chunks parsed → plain text streamed back to client
     ↓
-Response text returned to client → rendered in output panel
+onChunk callback updates UI progressively (token-by-token)
 ```
 
 ### AI Architecture
@@ -66,11 +70,19 @@ Each tool has two exports in its prompt file:
 
 2. **Prompt builder** (`build*Prompt`): Takes the form inputs and formats them into a structured user message. Handles optional fields gracefully.
 
-The API route (`/api/generate`) is a thin proxy:
+The API route (`/api/generate`) is a streaming proxy:
 - Receives system prompt + user message from the client
-- Calls Gemini Flash with those prompts
-- Returns the generated text
+- Calls Gemini Flash with `streamGenerateContent` (SSE mode)
+- Parses SSE data chunks and streams plain text back to the client
 - Handles errors with human-readable messages (never raw API errors)
+
+### Streaming
+
+The client-side `generateWithAI()` accepts an optional `onChunk` callback. When provided:
+- The response body is read as a stream
+- Each chunk is decoded and appended to the accumulated text
+- `onChunk(fullTextSoFar)` is called on each chunk, which updates React state
+- The UI renders progressively as tokens arrive
 
 ### Rate Limiting
 
@@ -113,9 +125,9 @@ Nothing is sent to any server except the AI generation request itself.
 
 2. Create the page: `src/app/your-tool/page.tsx`
    - "use client" directive (all tool pages are client components)
-   - Form inputs on the left, output on the right (responsive)
-   - Call `generateWithAI()` with your system prompt + built prompt
-   - Include rate limit checks, copy button, try again, and collapsible tips
+   - Form with PillSelect for options, Input/Textarea for text
+   - Call `generateWithAI(systemPrompt, builtPrompt, setOutput)` for streaming
+   - Include rate limit checks, copy button, try again, and tips
 
 3. Add to navbar: `src/components/navbar.tsx` (tools array)
 

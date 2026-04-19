@@ -20,11 +20,19 @@ export default function AboutPage() {
         </p>
 
         <div className="rounded-lg border border-border/60 bg-card p-6 mt-8">
-          <h2 className="font-semibold text-foreground">Built by Vatsal Khemani</h2>
+          <h2 className="font-semibold text-foreground">
+            Built by{" "}
+            <a href="https://www.linkedin.com/in/vatsal-khemani-39a483192" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-primary transition-colors">
+              Vatsal Khemani
+            </a>
+          </h2>
           <p className="mt-2 text-sm">
             Product Manager at Microsoft. Incoming Wharton MBA, Class of 2028. I built this for my
             classmates and the broader MBA community. If you have feedback or ideas for new tools,
-            I&apos;d genuinely love to hear from you.
+            reach out on{" "}
+            <a href="https://www.linkedin.com/in/vatsal-khemani-39a483192" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-foreground transition-colors">
+              LinkedIn
+            </a>.
           </p>
         </div>
       </div>
