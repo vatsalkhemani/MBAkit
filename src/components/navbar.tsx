@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 
 const tools = [
   { name: "Cold Email", href: "/cold-email" },
+  { name: "LinkedIn", href: "/linkedin" },
   { name: "Thank You", href: "/thank-you" },
   { name: "Resume", href: "/resume" },
   { name: "STAR Story", href: "/star" },
@@ -56,6 +57,17 @@ export function Navbar() {
             )}
           >
             About
+          </Link>
+          <Link
+            href="/feedback"
+            className={cn(
+              "rounded-md px-3 py-1.5 text-sm transition-colors",
+              pathname === "/feedback"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+            )}
+          >
+            Feedback
           </Link>
         </div>
 
@@ -111,6 +123,18 @@ export function Navbar() {
               )}
             >
               About
+            </Link>
+            <Link
+              href="/feedback"
+              onClick={() => setMobileOpen(false)}
+              className={cn(
+                "rounded-md px-3 py-2 text-sm transition-colors",
+                pathname === "/feedback"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              )}
+            >
+              Feedback
             </Link>
           </div>
         </div>

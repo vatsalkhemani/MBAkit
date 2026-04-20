@@ -3,10 +3,11 @@ import { THANK_YOU_SYSTEM_PROMPT, buildThankYouPrompt } from "../src/prompts/tha
 import { RESUME_SYSTEM_PROMPT, buildResumePrompt } from "../src/prompts/resume";
 import { STAR_SYSTEM_PROMPT, buildStarPrompt } from "../src/prompts/star";
 import { COFFEE_CHAT_SYSTEM_PROMPT, buildCoffeeChatPrompt } from "../src/prompts/coffee-chat";
+import { LINKEDIN_SYSTEM_PROMPT, buildLinkedInPrompt } from "../src/prompts/linkedin";
 
 export type Fixture = {
   id: string;
-  tool: "cold-email" | "thank-you" | "resume" | "star" | "coffee-chat";
+  tool: "cold-email" | "thank-you" | "resume" | "star" | "coffee-chat" | "linkedin";
   mode: "sparse" | "rich";
   label: string;
   systemPrompt: string;
@@ -313,6 +314,114 @@ export const FIXTURES: Fixture[] = [
       interviewType: "Tech PM",
     }),
   },
+  // === LinkedIn Outreach ===
+
+  {
+    id: "linkedin-connection-sparse",
+    tool: "linkedin",
+    mode: "sparse",
+    label: "Connection note — alumni, no personal detail, must stay under 300 chars",
+    systemPrompt: LINKEDIN_SYSTEM_PROMPT,
+    userMessage: buildLinkedInPrompt({
+      senderName: "Vatsal Khemani",
+      school: "Wharton MBA '28",
+      recipientName: "Sarah Chen",
+      recipientRole: "Senior PM",
+      recipientCompany: "Stripe",
+      messageType: "connection-note",
+      tier: "free",
+      connectionContext: "alumni network",
+      connectionDetail: "",
+      goal: "stay connected",
+      personalDetail: "",
+      tone: "warm-professional",
+    }),
+  },
+  {
+    id: "linkedin-connection-rich",
+    tool: "linkedin",
+    mode: "rich",
+    label: "Connection note — career switcher with specific talk reference, premium 300-char budget",
+    systemPrompt: LINKEDIN_SYSTEM_PROMPT,
+    userMessage: buildLinkedInPrompt({
+      senderName: "Priya Patel",
+      school: "Wharton MBA '28",
+      recipientName: "Marcus Liu",
+      recipientRole: "Director of Product",
+      recipientCompany: "Notion",
+      messageType: "connection-note",
+      tier: "premium",
+      connectionContext: "cold LinkedIn — their profile",
+      connectionDetail: "",
+      goal: "stay connected",
+      personalDetail: "He gave a talk at Figma Config 2025 on building a developer ecosystem around no-code tools. I'm switching from biotech R&D and want to understand how domain experts become product leaders.",
+      tone: "warm-professional",
+    }),
+  },
+  {
+    id: "linkedin-inmail-sparse",
+    tool: "linkedin",
+    mode: "sparse",
+    label: "InMail — cold outreach to a senior PM, no personal detail",
+    systemPrompt: LINKEDIN_SYSTEM_PROMPT,
+    userMessage: buildLinkedInPrompt({
+      senderName: "James Chen",
+      school: "Wharton MBA '28",
+      recipientName: "Rachel Wong",
+      recipientRole: "SVP Product",
+      recipientCompany: "Airbnb",
+      messageType: "inmail",
+      tier: "premium",
+      connectionContext: "cold LinkedIn — their profile",
+      connectionDetail: "",
+      goal: "coffee chat",
+      personalDetail: "",
+      tone: "warm-professional",
+    }),
+  },
+  {
+    id: "linkedin-inmail-rich",
+    tool: "linkedin",
+    mode: "rich",
+    label: "InMail — referral-driven with specific detail, asking for 20 minutes",
+    systemPrompt: LINKEDIN_SYSTEM_PROMPT,
+    userMessage: buildLinkedInPrompt({
+      senderName: "Sneha Reddy",
+      school: "Wharton MBA '28",
+      recipientName: "Maya Rodriguez",
+      recipientRole: "Head of Growth",
+      recipientCompany: "Ramp",
+      messageType: "inmail",
+      tier: "premium",
+      connectionContext: "referral",
+      connectionDetail: "Introduced through Alex Park (ex-Ramp PM, now classmate of mine)",
+      goal: "advice on role/industry",
+      personalDetail: "Alex mentioned she rebuilt Ramp's activation funnel last year and would have the sharpest take on growth PM work in B2B fintech.",
+      tone: "warm-professional",
+    }),
+  },
+  {
+    id: "linkedin-connection-engaged-post",
+    tool: "linkedin",
+    mode: "rich",
+    label: "Connection note — engaged with their recent post, cross-background",
+    systemPrompt: LINKEDIN_SYSTEM_PROMPT,
+    userMessage: buildLinkedInPrompt({
+      senderName: "Marcus Lee",
+      school: "Wharton MBA '28",
+      recipientName: "Elena Torres",
+      recipientRole: "Director of Talent",
+      recipientCompany: "Anthropic",
+      messageType: "connection-note",
+      tier: "free",
+      connectionContext: "engaged with their recent post",
+      connectionDetail: "",
+      goal: "stay connected",
+      personalDetail: "Her post on hiring for judgment over credentials in early-stage AI teams.",
+      tone: "casual",
+    }),
+  },
+
   {
     id: "coffee-chat-international",
     tool: "coffee-chat",

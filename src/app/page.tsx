@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, Heart, FileText, MessageSquare, Coffee } from "lucide-react";
+import { Mail, Heart, FileText, MessageSquare, Coffee, UserPlus } from "lucide-react";
 
 const tools = [
   {
@@ -7,6 +7,12 @@ const tools = [
     description: "Write cold emails that actually get replies. Short, specific, and human.",
     href: "/cold-email",
     icon: Mail,
+  },
+  {
+    name: "LinkedIn Outreach",
+    description: "Connection notes that get accepted, InMails that get replies. Respects LinkedIn's character limits.",
+    href: "/linkedin",
+    icon: UserPlus,
   },
   {
     name: "Thank You Note Writer",

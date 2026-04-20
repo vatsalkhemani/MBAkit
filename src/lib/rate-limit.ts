@@ -1,3 +1,5 @@
+import { track } from "@vercel/analytics";
+
 const DAILY_LIMIT = 20;
 
 function getKey(tool: string): string {
@@ -17,4 +19,9 @@ export function incrementUsage(tool: string): void {
   const key = getKey(tool);
   const count = parseInt(localStorage.getItem(key) || "0", 10);
   localStorage.setItem(key, String(count + 1));
+  try {
+    track("tool_used", { tool });
+  } catch {
+    // analytics should never break a generation
+  }
 }
