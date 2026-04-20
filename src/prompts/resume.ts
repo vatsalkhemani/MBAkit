@@ -26,13 +26,29 @@ Not every bullet fits perfectly, but the best ones have all three elements.
 
 Check each bullet for these issues. Flag what you find:
 
-1. WEAK VERB: "Responsible for," "Helped with," "Assisted in," "Worked on," "Participated in" are all weak. Strong: "Built," "Led," "Reduced," "Shipped," "Designed," "Launched," "Negotiated," "Architected."
+1. WEAK VERB: "Responsible for," "Helped with," "Assisted in," "Worked on," "Participated in," "Coordinated," "Managed" (when it really means led), and any verb-phrase that minimizes ownership. Strong: "Built," "Led," "Reduced," "Shipped," "Designed," "Launched," "Negotiated," "Architected."
 2. NO NUMBERS: If there's no quantification, flag it AND suggest what COULD be measured: users affected, revenue impact, time saved, team size, percentage improvement, deals closed, NPS change.
 3. VAGUE IMPACT: "Improved efficiency" or "enhanced performance" means nothing without specifics. What efficiency? By how much? For whom?
-4. PASSIVE VOICE: "Was responsible for managing" becomes "Managed." "The project was delivered" becomes "Delivered."
+4. PASSIVE VOICE: Only flag this when the sentence contains a "to be" auxiliary + past participle: "was responsible for," "were coordinated," "has been delivered," "is managed by." Active-voice weak verbs (Coordinated, Helped, Assisted, Managed, Worked on, Analyzed, Presented, Produced, Built) are NOT passive voice — flag them under WEAK VERB, not PASSIVE VOICE.
 5. BURIED LEAD: The most impressive part of the bullet isn't at the start. Lead with the impact or the action, not the context.
 6. TOO LONG: If it's more than ~25 words, it needs cutting. One line on a resume.
 7. "WE" PROBLEM: Resume bullets should show YOUR contribution. "We launched" becomes what did YOU do?
+
+## HARD BAN: THE WORD "PASSIVE" IS RESERVED FOR GRAMMATICAL PASSIVE VOICE ONLY
+
+The word "passive" in your diagnosis text is reserved STRICTLY for actual grammatical passive voice (to-be auxiliary + past participle). If you are describing any active-voice verb (Analyzed, Coordinated, Helped, Presented, Produced, Managed, Built, Delivered, etc.), you MUST NOT use the word "passive" anywhere in the explanation. The verb is active; only the subject's *tone* is weak. Use one of these adjectives instead: "low-impact," "non-committal," "undersells ownership," "soft," "minimizes contribution," "bland," "muted."
+
+BAD diagnosis text: "'Analyzed' and 'produced' are passive; they describe effort rather than value." (Both verbs are ACTIVE voice. "Passive" is the wrong word here.)
+
+GOOD diagnosis text: "'Analyzed' and 'produced' are low-impact verbs; they describe effort rather than value."
+
+BAD: "'Presented' is passive in terms of influence."
+
+GOOD: "'Presented' is a low-impact verb; it casts you as a messenger rather than an influencer."
+
+BAD: "'Coordinated' is passive and undersells the complexity."
+
+GOOD: "'Coordinated' is non-committal and undersells the complexity."
 
 ## INDUSTRY TAILORING
 
@@ -49,7 +65,7 @@ When a target industry is specified, adjust the emphasis:
 ## GOOD vs BAD EXAMPLES
 
 BAD: "Responsible for managing a team to improve the customer onboarding process"
-Diagnosis: Weak verb (Responsible for), no numbers, vague impact, passive
+Diagnosis: Weak verb ("Responsible for"), no numbers, vague impact, non-committal ownership
 
 Version 1 (Safe): "Managed 5-person team to redesign customer onboarding process"
 Version 2 (Stronger): "Led 5-person team to redesign onboarding, reducing time-to-value from 14 days to 3"
@@ -63,6 +79,8 @@ Version 2 (Stronger): "Designed tiered pricing model for enterprise product, inc
 Version 3 (Strongest): "Drove $2.4M incremental ARR by designing a 3-tier pricing model for the enterprise product line, validated through 30+ customer interviews"
 
 ## OUTPUT FORMAT
+
+**CRITICAL:** Begin your response directly with "### Bullet 1". Do NOT write any preamble, framing paragraph, scene-setting sentence, or introduction before the first bullet header. Do not write "For consulting, the goal is..." or "Here are your improved bullets." Your first characters in the output must be "### Bullet 1".
 
 For EACH bullet, return exactly:
 

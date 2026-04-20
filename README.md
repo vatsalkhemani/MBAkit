@@ -91,6 +91,14 @@ No database. No auth. No tracking. One serverless API endpoint.
 
 ---
 
+## Quality
+
+Every tool is evaluated with an automated quality harness before shipping. Each prompt is tested against 15 realistic fixtures (both minimal-input and rich-input scenarios across different backgrounds, industries, and interview types). An LLM-as-judge scores each output on format compliance, hallucination control, sendability, voice, and tool-specific criteria. Every run is logged in [evals/RUNLOG.md](evals/RUNLOG.md) and the detailed reports live in [evals/reports/](evals/reports/).
+
+Current status: see the latest row in the runlog. The shipping bar is **every fixture scoring GREAT** (all dimensions ≥4, majority at 5) across three consecutive runs. See [evals/METHODOLOGY.md](evals/METHODOLOGY.md) for how the evals work.
+
+---
+
 ## Security
 
 - API keys are stored server-side in `.env.local`, never exposed to the client
