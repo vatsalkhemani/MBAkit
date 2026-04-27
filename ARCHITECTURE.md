@@ -80,7 +80,7 @@ Output saved to localStorage history (last 10 per tool)
 
 Each tool has two exports in its prompt file:
 
-1. **System prompt** (`*_SYSTEM_PROMPT`): Contains the expertise. Only imported server-side by the API route — never sent to or from the client.
+1. **System prompt** (`*_SYSTEM_PROMPT`): Contains the expertise. Only imported server-side by the API route. Never sent to or from the client.
 
 2. **Prompt builder** (`build*Prompt`): Takes form inputs and formats them into a structured user message. Used client-side.
 
@@ -102,7 +102,7 @@ The `useGeneration` hook encapsulates the shared lifecycle across all 6 tool pag
 - Download as text file
 - History integration (auto-saves to localStorage)
 
-Each tool page still owns its own form, validation, and UI — the hook handles the generate/output/copy/download/history lifecycle.
+Each tool page still owns its own form, validation, and UI. The hook handles the generate/output/copy/download/history lifecycle.
 
 ### History
 

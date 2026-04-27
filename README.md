@@ -36,34 +36,25 @@ Tailored questions based on who you're meeting: role, company, seniority, and wh
 
 <div align="center">
   <img src="./screenshots/home.png" alt="MBAKit Home" width="800"/>
-  <p><em>Home, all tools at a glance</em></p>
+  <p><em>Home: all tools at a glance</em></p>
 </div>
 
 <div align="center">
   <img src="./screenshots/cold-email.png" alt="Cold Email Generator" width="800"/>
-  <p><em>Cold Email Generator</em></p>
-</div>
-
-<div align="center">
-  <img src="./screenshots/coffee-chat.png" alt="Coffee Chat Prep" width="800"/>
-  <p><em>Coffee Chat Prep</em></p>
-</div>
-
-<div align="center">
-  <img src="./screenshots/star.png" alt="STAR Story Builder" width="800"/>
-  <p><em>STAR Story Builder</em></p>
+  <p><em>Cold Email Generator in action</em></p>
 </div>
 
 ---
 
 ## Features
 
-- **Streaming output** — see your draft appear token-by-token as the AI writes
-- **Copy + Download** — one click to copy or download any output as a text file
-- **Generation history** — your last 10 generations per tool are saved locally, viewable and restorable anytime
-- **Load example** — every tool has a pre-filled example so you can see what good input looks like
-- **Dark mode** — automatic or manual theme toggle
-- **Mobile-friendly** — works on phone, tablet, and desktop
+- **Streaming output**: see your draft appear token-by-token as the AI writes
+- **Copy + Download**: one click to copy or download any output as a text file
+- **Generation history**: your last 10 generations per tool are saved locally, viewable and restorable anytime
+- **Load example**: every tool has a pre-filled example so you can see what good input looks like
+- **Dark mode**: automatic or manual theme toggle
+- **Mobile-friendly**: works on phone, tablet, and desktop
+- **No em-dashes**: every output uses clean punctuation, never the overused em-dash
 
 All data stays in your browser. Nothing is sent to any server except the AI generation request itself.
 
@@ -97,7 +88,7 @@ Open [http://localhost:3000](http://localhost:3000).
 |-------|--------|
 | **Framework** | Next.js 16 (App Router), React 19, TypeScript |
 | **Styling** | Tailwind CSS v4, shadcn/ui |
-| **AI** | NVIDIA NIM — Mistral Small 4 (free tier, streaming) |
+| **AI** | NVIDIA NIM, Mistral Small 4 (free tier, streaming) |
 | **Analytics** | Vercel Web Analytics (anonymous, no cookies) |
 | **Hosting** | Vercel (free tier) |
 
@@ -115,11 +106,11 @@ The shipping bar is **every fixture scoring GREAT** (all dimensions ≥4, majori
 
 ## Security
 
-- System prompts live server-side only — the client sends a tool ID, not raw prompts
+- System prompts live server-side only: the client sends a tool ID, not raw prompts
 - API keys are stored in `.env.local`, never exposed to the client
 - Server-side IP rate limiting (60 req/hr) prevents abuse
 - Client-side daily rate limiting (20/tool/day) prevents accidental quota burn
-- Input size validated (5000 char max)
+- Input size validated (5,000 char max)
 - All AI calls are proxied through a single Next.js API route
 
 ---
