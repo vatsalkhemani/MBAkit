@@ -11,7 +11,7 @@ export async function generateWithAI(
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || "Something went wrong. Try again?");
+    throw new Error(err.error || "Something unexpected happened. Please try again!");
   }
 
   if (onChunk && res.body) {

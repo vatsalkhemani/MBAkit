@@ -40,7 +40,7 @@ export function useGeneration({
     async (toolId: string, userMessage: string) => {
       const { allowed } = checkRateLimit(toolName);
       if (!allowed) {
-        setError("Daily limit reached. Come back tomorrow.");
+        setError("You've hit your daily limit for this tool. Come back tomorrow, or try a different tool!");
         return;
       }
 
@@ -54,7 +54,7 @@ export function useGeneration({
         incrementUsage(toolName);
         history.addEntry(result);
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Something went wrong. Try again?");
+        setError(e instanceof Error ? e.message : "Something unexpected happened. Please try again!");
       } finally {
         setLoading(false);
       }

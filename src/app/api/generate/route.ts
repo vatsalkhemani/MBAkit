@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
       req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
     if (!checkServerRateLimit(ip)) {
       return Response.json(
-        { error: "Too many requests. Try again in a bit." },
+        { error: "You've been generating a lot! Take a short break and try again in a few minutes." },
         { status: 429 }
       );
     }
@@ -102,10 +102,20 @@ export async function POST(req: NextRequest) {
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      const message =
-        res.status === 429
-          ? "Lots of people using MBAKit right now. Try again in a few minutes."
-          : "Something went wrong with the AI. Try again?";
+      let message: string;
+      if (res.status === 429) {
+        message =
+          "MBAKit is seeing high traffic right now. Please try again in a few minutes!";
+      } else if (res.status === 402) {
+        message =
+          "MBAKit has hit its daily AI quota. Please come back in a few hours, we'll be back up soon!";
+      } else if (res.status === 503 || res.status === 502) {
+        message =
+          "The AI service is temporarily down for maintenance. Please try again in a little while!";
+      } else {
+        message =
+          "Something unexpected happened. Please try again, and if it keeps happening, let us know via the Feedback page!";
+      }
       console.error("NVIDIA NIM API error:", res.status, err);
       return Response.json({ error: message }, { status: res.status });
     }
@@ -160,7 +170,7 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     console.error("Generate error:", e);
     return Response.json(
-      { error: "Something went wrong. Try again?" },
+      { error: "Something unexpected happened. Please try again!" },
       { status: 500 }
     );
   }
