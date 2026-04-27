@@ -11,13 +11,15 @@ interface PillSelectProps {
 
 export function PillSelect({ value, onChange, options, label }: PillSelectProps) {
   return (
-    <div>
+    <div role="radiogroup" aria-label={label}>
       {label && <p className="mb-1.5 text-sm font-medium">{label}</p>}
       <div className="flex flex-wrap gap-1.5">
         {options.map((opt) => (
           <button
             key={opt.value}
             type="button"
+            role="radio"
+            aria-checked={value === opt.value}
             onClick={() => onChange(opt.value)}
             className={cn(
               "rounded-full px-3 py-1 text-sm transition-all border",

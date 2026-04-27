@@ -56,6 +56,19 @@ Tailored questions based on who you're meeting: role, company, seniority, and wh
 
 ---
 
+## Features
+
+- **Streaming output** — see your draft appear token-by-token as the AI writes
+- **Copy + Download** — one click to copy or download any output as a text file
+- **Generation history** — your last 10 generations per tool are saved locally, viewable and restorable anytime
+- **Load example** — every tool has a pre-filled example so you can see what good input looks like
+- **Dark mode** — automatic or manual theme toggle
+- **Mobile-friendly** — works on phone, tablet, and desktop
+
+All data stays in your browser. Nothing is sent to any server except the AI generation request itself.
+
+---
+
 ## Getting Started
 
 ### Prerequisites
@@ -94,7 +107,7 @@ No database. No auth. One serverless API endpoint.
 
 ## Quality
 
-Every tool is evaluated with an automated quality harness before shipping. Each prompt is tested against realistic fixtures (both minimal-input and rich-input scenarios across different backgrounds, industries, and interview types). An LLM-as-judge scores each output on format compliance, hallucination control, sendability, voice, and tool-specific criteria. Every run is logged in [evals/RUNLOG.md](evals/RUNLOG.md) and the detailed reports live in [evals/reports/](evals/reports/).
+Every tool is evaluated with an automated quality harness before shipping. Each prompt is tested against realistic fixtures (both minimal-input and rich-input scenarios across different backgrounds, industries, and interview types). An LLM-as-judge scores each output on format compliance, hallucination control, sendability, voice, and tool-specific criteria. Every run is logged in [evals/RUNLOG.md](evals/RUNLOG.md).
 
 The shipping bar is **every fixture scoring GREAT** (all dimensions ≥4, majority at 5) across three consecutive runs. See [evals/METHODOLOGY.md](evals/METHODOLOGY.md) for details.
 
@@ -102,9 +115,12 @@ The shipping bar is **every fixture scoring GREAT** (all dimensions ≥4, majori
 
 ## Security
 
-- API keys are stored server-side in `.env.local`, never exposed to the client
-- `.env.local` is gitignored by default
-- All AI calls are proxied through a Next.js API route
+- System prompts live server-side only — the client sends a tool ID, not raw prompts
+- API keys are stored in `.env.local`, never exposed to the client
+- Server-side IP rate limiting (60 req/hr) prevents abuse
+- Client-side daily rate limiting (20/tool/day) prevents accidental quota burn
+- Input size validated (5000 char max)
+- All AI calls are proxied through a single Next.js API route
 
 ---
 

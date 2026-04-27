@@ -93,6 +93,7 @@ export function HistoryPanel({
                       onClick={() =>
                         setExpandedId(expandedId === entry.id ? null : entry.id)
                       }
+                      aria-expanded={expandedId === entry.id}
                       className="flex-1 text-left truncate text-muted-foreground hover:text-foreground transition-colors"
                     >
                       <span className="text-xs text-muted-foreground/70 mr-2">

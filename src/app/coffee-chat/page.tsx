@@ -141,7 +141,7 @@ export default function CoffeeChatPage() {
             <MarkdownOutput content={mainContent} />
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button variant="outline" size="sm" onClick={handleCopyPrep}>
               <Copy className="mr-1.5 h-3.5 w-3.5" />
               {copied ? "Copied!" : "Copy prep"}

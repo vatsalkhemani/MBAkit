@@ -175,7 +175,7 @@ export default function ThankYouPage() {
             <MarkdownOutput content={noteBody} />
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button variant="outline" size="sm" onClick={handleCopyNote}>
               <Copy className="mr-1.5 h-3.5 w-3.5" />
               {copied ? "Copied!" : "Copy note"}
