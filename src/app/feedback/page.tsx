@@ -15,7 +15,7 @@ const categoryOptions = [
   { label: "General", value: "general" },
 ];
 
-const OWNER_EMAIL = "vkhemani@microsoft.com";
+const OWNER_EMAIL = "vatsalkhemani@gmail.com";
 
 export default function FeedbackPage() {
   const [category, setCategory] = useState("feature");
