@@ -149,7 +149,9 @@ export async function POST(req: NextRequest) {
                 const parsed = JSON.parse(jsonStr);
                 const text = parsed.choices?.[0]?.delta?.content;
                 if (text) {
-                  controller.enqueue(new TextEncoder().encode(text));
+                  // Strip em-dashes from output (model sometimes ignores the prompt rule)
+                  const cleaned = text.replaceAll("\u2014", ",");
+                  controller.enqueue(new TextEncoder().encode(cleaned));
                 }
               } catch {
                 // skip malformed chunks

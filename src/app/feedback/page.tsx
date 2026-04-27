@@ -36,22 +36,20 @@ export default function FeedbackPage() {
     setSubmitting(true);
     setError("");
 
-    const endpoint = process.env.NEXT_PUBLIC_FEEDBACK_ENDPOINT;
-
-    if (endpoint) {
-      try {
-        const res = await fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ category, tool, message, name, contact }),
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    try {
+      const res = await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ category, tool, message, name, contact }),
+      });
+      if (res.ok) {
         setSubmitted(true);
-      } catch {
-        // Fall through to mailto
+      } else {
+        // API unavailable or errored, fall back to mailto
         openMailto();
       }
-    } else {
+    } catch {
+      // Network error, fall back to mailto
       openMailto();
     }
 
@@ -97,7 +95,7 @@ export default function FeedbackPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight">Feedback</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Bugs, feature ideas, or a prompt that gave you a weird output &mdash; send it here. Short is fine.
+          Bugs, feature ideas, or a prompt that gave you a weird output: send it here. Short is fine.
         </p>
       </div>
 

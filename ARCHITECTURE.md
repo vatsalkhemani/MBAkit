@@ -23,7 +23,8 @@ src/
 │   ├── coffee-chat/page.tsx    # Coffee Chat Prep
 │   ├── feedback/page.tsx       # Feedback form
 │   └── api/
-│       └── generate/route.ts   # Streaming AI proxy (toolId-based, server-side rate limited)
+│       ├── generate/route.ts   # Streaming AI proxy (toolId-based, server-side rate limited)
+│       └── feedback/route.ts   # Email feedback API (Resend, with mailto fallback)
 ├── components/
 │   ├── navbar.tsx              # Navigation with mobile menu + theme toggle
 │   ├── pill-select.tsx         # Pill-shaped button group for single-select options
@@ -90,7 +91,7 @@ The API route (`/api/generate`) is a secure streaming proxy:
 - Applies IP-based rate limiting (60 req/hr)
 - Validates input size (max 5000 chars)
 - Calls NVIDIA NIM (Mistral Small 4) via OpenAI-compatible chat completions (SSE streaming)
-- Parses SSE data chunks and streams plain text back to the client
+- Parses SSE data chunks, strips em-dashes from output, and streams plain text back to the client
 
 ### Shared Hook: useGeneration
 
@@ -175,6 +176,7 @@ Nothing is sent to any server except the AI generation request itself.
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `NVIDIA_API_KEY` | Yes | NVIDIA NIM API key ([get one free](https://build.nvidia.com)) |
+| `RESEND_API_KEY` | No | Resend API key for email feedback ([get one free](https://resend.com)). Without it, feedback falls back to mailto. |
 
 ---
 
@@ -186,4 +188,4 @@ Built for Vercel free tier:
 npm run build   # Produces static pages + one serverless function (/api/generate)
 ```
 
-All tool pages are statically generated. Only `/api/generate` runs as a serverless function.
+All tool pages are statically generated. `/api/generate` and `/api/feedback` run as serverless functions.
