@@ -1,6 +1,6 @@
 # MBAKit Evals
 
-LLM-as-judge quality harness for the 5 MBAKit tools. Generates outputs from the live Gemini-backed API, then a Claude judge scores them against [rubric.md](rubric.md).
+LLM-as-judge quality harness for the 5 MBAKit tools. Generates outputs from the live NVIDIA NIM-backed API, then a Claude judge scores them against [rubric.md](rubric.md).
 
 ## How it works
 

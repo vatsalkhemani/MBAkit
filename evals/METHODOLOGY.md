@@ -59,7 +59,7 @@ Input varies from "two sentences" (sparse) to "full paragraph with specifics" (r
 
 ## How a run works
 
-1. **Start the dev server** (`npm run dev`). This gives us the live Gemini-backed API at `http://localhost:3000/api/generate`.
+1. **Start the dev server** (`npm run dev`). This gives us the live NVIDIA NIM-backed API at `http://localhost:3000/api/generate`.
 2. **Run the harness** (`npm run eval`). It sends every fixture through the real API, streams the response, and saves each output to `outputs/<fixture-id>.md`.
 3. **A Claude session judges** — reads each output and scores it against the rubric. Writes a detailed report to `reports/run-NNN.md` and a summary row to [RUNLOG.md](RUNLOG.md).
 
@@ -80,7 +80,7 @@ Worth being explicit:
 
 - **Latency SLA** — we log it, we don't enforce it
 - **Streaming correctness** — we consume the stream but don't assert well-formed SSE
-- **Cost / token usage** — Gemini 3.1 Flash Lite is free tier, not worth tracking yet
+- **Cost / token usage** — NVIDIA NIM free tier, not worth tracking yet
 - **Rate limiting** — the client-side localStorage limit isn't exercised
 - **Safety / toxicity** — tools are low-risk, not a priority
 - **UX flow** — this is API-layer only, not a browser test

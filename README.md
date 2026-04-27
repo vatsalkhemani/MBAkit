@@ -74,7 +74,7 @@ All data stays in your browser. Nothing is sent to any server except the AI gene
 ### Prerequisites
 
 - Node.js 18+
-- A Gemini API key ([get one free](https://aistudio.google.com/apikey))
+- An NVIDIA NIM API key ([get one free](https://build.nvidia.com))
 
 ### Setup
 
@@ -83,7 +83,7 @@ git clone https://github.com/vatsalkhemani/mbakit.git
 cd mbakit
 npm install
 cp .env.example .env.local
-# Edit .env.local and add your GEMINI_API_KEY
+# Edit .env.local and add your NVIDIA_API_KEY
 npm run dev
 ```
 
@@ -97,7 +97,7 @@ Open [http://localhost:3000](http://localhost:3000).
 |-------|--------|
 | **Framework** | Next.js 16 (App Router), React 19, TypeScript |
 | **Styling** | Tailwind CSS v4, shadcn/ui |
-| **AI** | Google Gemini 3.1 Flash Lite (free tier, streaming) |
+| **AI** | NVIDIA NIM — Mistral Small 4 (free tier, streaming) |
 | **Analytics** | Vercel Web Analytics (anonymous, no cookies) |
 | **Hosting** | Vercel (free tier) |
 

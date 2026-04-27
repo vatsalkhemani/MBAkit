@@ -67,7 +67,7 @@ Server-side rate limit check (IP-based, 60 req/hr)
     ↓
 Server maps toolId → system prompt (prompts never leave the server)
     ↓
-API route streams from Gemini (streamGenerateContent?alt=sse)
+API route streams from NVIDIA NIM (OpenAI-compatible SSE)
     ↓
 SSE chunks parsed → plain text streamed back to client
     ↓
@@ -89,7 +89,7 @@ The API route (`/api/generate`) is a secure streaming proxy:
 - Maps `toolId` to the correct system prompt server-side
 - Applies IP-based rate limiting (60 req/hr)
 - Validates input size (max 5000 chars)
-- Calls Gemini Flash with `streamGenerateContent` (SSE mode)
+- Calls NVIDIA NIM (Mistral Small 4) via OpenAI-compatible chat completions (SSE streaming)
 - Parses SSE data chunks and streams plain text back to the client
 
 ### Shared Hook: useGeneration
@@ -174,7 +174,7 @@ Nothing is sent to any server except the AI generation request itself.
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `GEMINI_API_KEY` | Yes | Google Gemini API key ([get one free](https://aistudio.google.com/apikey)) |
+| `NVIDIA_API_KEY` | Yes | NVIDIA NIM API key ([get one free](https://build.nvidia.com)) |
 
 ---
 

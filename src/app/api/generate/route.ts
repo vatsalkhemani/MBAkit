@@ -16,10 +16,12 @@ const PROMPT_MAP: Record<string, string> = {
 };
 
 const MAX_MESSAGE_LENGTH = 5000;
+const NVIDIA_MODEL = "mistralai/mistral-small-4-119b-2603";
+const NVIDIA_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
 
-// Simple in-memory IP rate limiter (resets on cold start, but good enough for abuse prevention)
+// Simple in-memory IP rate limiter (resets on cold start, good enough for abuse prevention)
 const ipCounts = new Map<string, { count: number; resetAt: number }>();
-const SERVER_RATE_LIMIT = 60; // requests per window
+const SERVER_RATE_LIMIT = 60;
 const WINDOW_MS = 60 * 60 * 1000; // 1 hour
 
 function checkServerRateLimit(ip: string): boolean {
@@ -35,7 +37,8 @@ function checkServerRateLimit(ip: string): boolean {
 
 export async function POST(req: NextRequest) {
   try {
-    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    const ip =
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
     if (!checkServerRateLimit(ip)) {
       return Response.json(
         { error: "Too many requests. Try again in a bit." },
@@ -47,7 +50,10 @@ export async function POST(req: NextRequest) {
     const { toolId, userMessage } = body;
 
     if (!toolId || !userMessage) {
-      return Response.json({ error: "Missing toolId or message" }, { status: 400 });
+      return Response.json(
+        { error: "Missing toolId or message" },
+        { status: 400 }
+      );
     }
 
     const systemPrompt = PROMPT_MAP[toolId];
@@ -55,36 +61,44 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: "Unknown tool" }, { status: 400 });
     }
 
-    if (typeof userMessage !== "string" || userMessage.length > MAX_MESSAGE_LENGTH) {
+    if (
+      typeof userMessage !== "string" ||
+      userMessage.length > MAX_MESSAGE_LENGTH
+    ) {
       return Response.json(
         { error: `Message too long. Max ${MAX_MESSAGE_LENGTH} characters.` },
         { status: 400 }
       );
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.NVIDIA_API_KEY;
     if (!apiKey) {
       return Response.json(
-        { error: "API key not configured. Add GEMINI_API_KEY to your .env.local file." },
+        {
+          error:
+            "API key not configured. Add NVIDIA_API_KEY to your .env.local file.",
+        },
         { status: 500 }
       );
     }
 
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:streamGenerateContent?alt=sse&key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: systemPrompt }] },
-          contents: [{ parts: [{ text: userMessage }] }],
-          generationConfig: {
-            temperature: 0.65,
-            maxOutputTokens: 2048,
-          },
-        }),
-      }
-    );
+    const res = await fetch(NVIDIA_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: NVIDIA_MODEL,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userMessage },
+        ],
+        temperature: 0.65,
+        max_tokens: 2048,
+        stream: true,
+      }),
+    });
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
@@ -92,7 +106,7 @@ export async function POST(req: NextRequest) {
         res.status === 429
           ? "Lots of people using MBAKit right now. Try again in a few minutes."
           : "Something went wrong with the AI. Try again?";
-      console.error("Gemini API error:", err);
+      console.error("NVIDIA NIM API error:", res.status, err);
       return Response.json({ error: message }, { status: res.status });
     }
 
@@ -100,6 +114,7 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: "No response from AI" }, { status: 502 });
     }
 
+    // Parse OpenAI-compatible SSE stream and forward plain text to client
     const stream = new ReadableStream({
       async start(controller) {
         const reader = res.body!.getReader();
@@ -122,7 +137,7 @@ export async function POST(req: NextRequest) {
 
               try {
                 const parsed = JSON.parse(jsonStr);
-                const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
+                const text = parsed.choices?.[0]?.delta?.content;
                 if (text) {
                   controller.enqueue(new TextEncoder().encode(text));
                 }
@@ -144,6 +159,9 @@ export async function POST(req: NextRequest) {
     });
   } catch (e) {
     console.error("Generate error:", e);
-    return Response.json({ error: "Something went wrong. Try again?" }, { status: 500 });
+    return Response.json(
+      { error: "Something went wrong. Try again?" },
+      { status: 500 }
+    );
   }
 }
