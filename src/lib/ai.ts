@@ -1,12 +1,12 @@
 export async function generateWithAI(
-  systemPrompt: string,
+  toolId: string,
   userMessage: string,
   onChunk?: (text: string) => void
 ): Promise<string> {
   const res = await fetch("/api/generate", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ systemPrompt, userMessage }),
+    body: JSON.stringify({ toolId, userMessage }),
   });
 
   if (!res.ok) {
@@ -30,6 +30,5 @@ export async function generateWithAI(
     return full;
   }
 
-  // Fallback: read entire response at once
   return await res.text();
 }

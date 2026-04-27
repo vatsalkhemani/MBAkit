@@ -1,18 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { PillSelect } from "@/components/pill-select";
-import { Copy, RefreshCw, Loader2, Lightbulb } from "lucide-react";
+import { Copy, RefreshCw, Loader2, Lightbulb, Download } from "lucide-react";
 import { MarkdownOutput } from "@/components/markdown-output";
-import { generateWithAI } from "@/lib/ai";
-import { checkRateLimit, incrementUsage } from "@/lib/rate-limit";
-import { COLD_EMAIL_SYSTEM_PROMPT, buildColdEmailPrompt } from "@/prompts/cold-email";
+import { HistoryPanel } from "@/components/history-panel";
+import { useGeneration } from "@/lib/use-generation";
+import { safeGetJSON, safeSetJSON } from "@/lib/storage";
+import { buildColdEmailPrompt } from "@/prompts/cold-email";
 
-const TOOL_NAME = "cold-email";
+const TOOL_ID = "cold-email";
 
 const connectionOptions = [
   { label: "Alumni", value: "alumni network" },
@@ -47,6 +48,10 @@ export default function ColdEmailPage() {
   const [personalDetail, setPersonalDetail] = useState("");
   const [tone, setTone] = useState("warm-professional");
 
+  const extractForCopy = useCallback((o: string) => o.split("---")[0].trim(), []);
+  const { output, loading, error, copied, generate, handleCopy, handleDownload, setOutput, setError, history } =
+    useGeneration({ toolName: TOOL_ID, extractForCopy });
+
   function loadExample() {
     setSenderName("Vatsal Khemani");
     setSchool("Wharton MBA '28");
@@ -60,69 +65,39 @@ export default function ColdEmailPage() {
     setTone("warm-professional");
   }
 
-  const [output, setOutput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [copied, setCopied] = useState(false);
-
   useEffect(() => {
-    const saved = localStorage.getItem("mbakit_sender");
+    const saved = safeGetJSON<{ name?: string; school?: string }>("mbakit_sender");
     if (saved) {
-      const { name, school: s } = JSON.parse(saved);
-      if (name) setSenderName(name);
-      if (s) setSchool(s);
+      if (saved.name) setSenderName(saved.name);
+      if (saved.school) setSchool(saved.school);
     }
   }, []);
 
   useEffect(() => {
     if (senderName || school) {
-      localStorage.setItem("mbakit_sender", JSON.stringify({ name: senderName, school }));
+      safeSetJSON("mbakit_sender", { name: senderName, school });
     }
   }, [senderName, school]);
 
   async function handleGenerate() {
-    const { allowed } = checkRateLimit(TOOL_NAME);
-    if (!allowed) {
-      setError("Daily limit reached. Come back tomorrow.");
-      return;
-    }
     if (!recipientName || !recipientCompany) {
       setError("Fill in at least the recipient's name and company.");
       return;
     }
 
-    setLoading(true);
-    setError("");
-    setOutput("");
-
-    try {
-      const prompt = buildColdEmailPrompt({
-        senderName: senderName || "[Your Name]",
-        school: school || "[Your School]",
-        recipientName,
-        recipientRole,
-        recipientCompany,
-        connectionType,
-        connectionDetail,
-        goal,
-        personalDetail,
-        tone,
-      });
-      const result = await generateWithAI(COLD_EMAIL_SYSTEM_PROMPT, prompt, setOutput);
-      setOutput(result);
-      incrementUsage(TOOL_NAME);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong. Try again?");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function handleCopy() {
-    const emailOnly = output.split("---")[0].trim();
-    navigator.clipboard.writeText(emailOnly);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    const prompt = buildColdEmailPrompt({
+      senderName: senderName || "[Your Name]",
+      school: school || "[Your School]",
+      recipientName,
+      recipientRole,
+      recipientCompany,
+      connectionType,
+      connectionDetail,
+      goal,
+      personalDetail,
+      tone,
+    });
+    await generate(TOOL_ID, prompt);
   }
 
   const emailBody = output ? output.split("---")[0].trim() : "";
@@ -212,6 +187,10 @@ export default function ColdEmailPage() {
               <Copy className="mr-1.5 h-3.5 w-3.5" />
               {copied ? "Copied!" : "Copy email"}
             </Button>
+            <Button variant="outline" size="sm" onClick={handleDownload}>
+              <Download className="mr-1.5 h-3.5 w-3.5" />
+              Download
+            </Button>
             <Button variant="outline" size="sm" onClick={handleGenerate} disabled={loading}>
               <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
               Try again
@@ -233,6 +212,13 @@ export default function ColdEmailPage() {
           <span>The best cold emails are under 5 sentences with a specific ask and a timeline.</span>
         </div>
       )}
+
+      <HistoryPanel
+        getEntries={history.getEntries}
+        removeEntry={history.removeEntry}
+        clearAll={history.clearAll}
+        onRestore={setOutput}
+      />
     </div>
   );
 }

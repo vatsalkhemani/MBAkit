@@ -1,18 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { PillSelect } from "@/components/pill-select";
-import { Copy, RefreshCw, Loader2, Lightbulb } from "lucide-react";
+import { Copy, RefreshCw, Loader2, Lightbulb, Download } from "lucide-react";
 import { MarkdownOutput } from "@/components/markdown-output";
-import { generateWithAI } from "@/lib/ai";
-import { checkRateLimit, incrementUsage } from "@/lib/rate-limit";
-import { THANK_YOU_SYSTEM_PROMPT, buildThankYouPrompt } from "@/prompts/thank-you";
+import { HistoryPanel } from "@/components/history-panel";
+import { useGeneration } from "@/lib/use-generation";
+import { safeGetJSON } from "@/lib/storage";
+import { buildThankYouPrompt } from "@/prompts/thank-you";
 
-const TOOL_NAME = "thank-you";
+const TOOL_ID = "thank-you";
 
 const contextOptions = [
   { label: "Coffee chat", value: "coffee chat" },
@@ -50,10 +51,10 @@ export default function ThankYouPage() {
   const [discussed, setDiscussed] = useState("");
   const [followUp, setFollowUp] = useState("");
   const [tone, setTone] = useState("warm");
-  const [output, setOutput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [copied, setCopied] = useState(false);
+
+  const extractForCopy = useCallback((o: string) => o.split("---")[0].trim(), []);
+  const { output, loading, error, copied, generate, handleCopy, handleDownload, setOutput, setError, history } =
+    useGeneration({ toolName: TOOL_ID, extractForCopy });
 
   function loadExample() {
     setSenderName("Vatsal Khemani");
@@ -66,11 +67,8 @@ export default function ThankYouPage() {
   }
 
   useEffect(() => {
-    const saved = localStorage.getItem("mbakit_sender");
-    if (saved) {
-      const { name } = JSON.parse(saved);
-      if (name) setSenderName(name);
-    }
+    const saved = safeGetJSON<{ name?: string }>("mbakit_sender");
+    if (saved?.name) setSenderName(saved.name);
   }, []);
 
   function handleContextChange(val: string) {
@@ -79,45 +77,25 @@ export default function ThankYouPage() {
   }
 
   async function handleGenerate() {
-    const { allowed } = checkRateLimit(TOOL_NAME);
-    if (!allowed) {
-      setError("Daily limit reached. Come back tomorrow.");
-      return;
-    }
     if (!recipientName) {
       setError("Fill in at least the recipient's name.");
       return;
     }
 
-    setLoading(true);
-    setError("");
-    setOutput("");
-
-    try {
-      const prompt = buildThankYouPrompt({
-        senderName: senderName || "[Your Name]",
-        recipientName,
-        recipientRole,
-        context,
-        discussed,
-        followUp,
-        tone,
-      });
-      const result = await generateWithAI(THANK_YOU_SYSTEM_PROMPT, prompt, setOutput);
-      setOutput(result);
-      incrementUsage(TOOL_NAME);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong. Try again?");
-    } finally {
-      setLoading(false);
-    }
+    const prompt = buildThankYouPrompt({
+      senderName: senderName || "[Your Name]",
+      recipientName,
+      recipientRole,
+      context,
+      discussed,
+      followUp,
+      tone,
+    });
+    await generate(TOOL_ID, prompt);
   }
 
-  function handleCopy() {
-    const noteOnly = output.split("---")[0].trim();
-    navigator.clipboard.writeText(noteOnly);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  function handleCopyNote() {
+    handleCopy();
   }
 
   const noteBody = output ? output.split("---")[0].trim() : "";
@@ -198,9 +176,13 @@ export default function ThankYouPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleCopy}>
+            <Button variant="outline" size="sm" onClick={handleCopyNote}>
               <Copy className="mr-1.5 h-3.5 w-3.5" />
               {copied ? "Copied!" : "Copy note"}
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleDownload}>
+              <Download className="mr-1.5 h-3.5 w-3.5" />
+              Download
             </Button>
             <Button variant="outline" size="sm" onClick={handleGenerate} disabled={loading}>
               <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
@@ -223,6 +205,12 @@ export default function ThankYouPage() {
           <span>Send within 24 hours. Reference something specific from the conversation, not just &quot;thanks for your time.&quot;</span>
         </div>
       )}
+      <HistoryPanel
+        getEntries={history.getEntries}
+        removeEntry={history.removeEntry}
+        clearAll={history.clearAll}
+        onRestore={setOutput}
+      />
     </div>
   );
 }

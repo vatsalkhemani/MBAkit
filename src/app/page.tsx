@@ -1,44 +1,5 @@
 import Link from "next/link";
-import { Mail, Heart, FileText, MessageSquare, Coffee, UserPlus } from "lucide-react";
-
-const tools = [
-  {
-    name: "Cold Email Generator",
-    description: "Write cold emails that actually get replies. Short, specific, and human.",
-    href: "/cold-email",
-    icon: Mail,
-  },
-  {
-    name: "LinkedIn Outreach",
-    description: "Connection notes that get accepted, InMails that get replies. Respects LinkedIn's character limits.",
-    href: "/linkedin",
-    icon: UserPlus,
-  },
-  {
-    name: "Thank You Note Writer",
-    description: "Send the perfect follow-up within 24 hours. Specific, warm, and memorable.",
-    href: "/thank-you",
-    icon: Heart,
-  },
-  {
-    name: "Resume Bullet Sharpener",
-    description: "Turn vague bullets into quantified, impactful statements that land interviews.",
-    href: "/resume",
-    icon: FileText,
-  },
-  {
-    name: "STAR Story Builder",
-    description: "Structure your experiences into compelling behavioral interview stories.",
-    href: "/star",
-    icon: MessageSquare,
-  },
-  {
-    name: "Coffee Chat Prep",
-    description: "Smart questions that show you did your homework. Walk in confident, leave memorable.",
-    href: "/coffee-chat",
-    icon: Coffee,
-  },
-];
+import { tools } from "@/lib/tools";
 
 export default function Home() {
   return (

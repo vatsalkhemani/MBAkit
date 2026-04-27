@@ -11,29 +11,37 @@ MBAKit is a Next.js 16 application using the App Router pattern. It's intentiona
 ```
 src/
 ├── app/
-│   ├── layout.tsx              # Root layout (ThemeProvider, Navbar, footer)
+│   ├── layout.tsx              # Root layout (ThemeProvider, Navbar, footer, OG metadata)
 │   ├── page.tsx                # Landing page with tool cards
 │   ├── globals.css             # Tailwind + shadcn theme tokens
 │   ├── about/page.tsx          # About page
 │   ├── cold-email/page.tsx     # Cold Email Generator
+│   ├── linkedin/page.tsx       # LinkedIn Outreach
 │   ├── thank-you/page.tsx      # Thank You Note Writer
 │   ├── resume/page.tsx         # Resume Bullet Sharpener
 │   ├── star/page.tsx           # STAR Story Builder
 │   ├── coffee-chat/page.tsx    # Coffee Chat Prep
+│   ├── feedback/page.tsx       # Feedback form
 │   └── api/
-│       └── generate/route.ts   # Streaming AI proxy endpoint (Gemini 3.1 Flash Lite)
+│       └── generate/route.ts   # Streaming AI proxy (toolId-based, server-side rate limited)
 ├── components/
 │   ├── navbar.tsx              # Navigation with mobile menu + theme toggle
 │   ├── pill-select.tsx         # Pill-shaped button group for single-select options
 │   ├── markdown-output.tsx     # React Markdown renderer for AI output
+│   ├── history-panel.tsx       # Collapsible recent generations panel
 │   ├── theme-provider.tsx      # next-themes wrapper
-│   └── ui/                     # shadcn/ui components (button, card, input, etc.)
+│   └── ui/                     # shadcn/ui primitives (button, input, label, textarea)
 ├── lib/
 │   ├── ai.ts                   # Client-side streaming fetch wrapper for /api/generate
-│   ├── rate-limit.ts           # localStorage-based daily rate limiting
+│   ├── tools.ts                # Single source of truth for tool metadata (navbar + home)
+│   ├── storage.ts              # Safe localStorage helpers (never throws)
+│   ├── use-generation.ts       # Shared hook: generate, copy, download, history
+│   ├── use-history.ts          # localStorage-based generation history (last 10 per tool)
+│   ├── rate-limit.ts           # Client-side daily rate limiting
 │   └── utils.ts                # cn() utility for Tailwind class merging
 └── prompts/
     ├── cold-email.ts           # System prompt + input builder for cold emails
+    ├── linkedin.ts             # System prompt + input builder for LinkedIn outreach
     ├── thank-you.ts            # System prompt + input builder for thank-you notes
     ├── resume.ts               # System prompt + input builder for resume bullets
     ├── star.ts                 # System prompt + input builder for STAR stories
@@ -49,52 +57,78 @@ src/
 ```
 User fills form → clicks Generate
     ↓
-Tool page calls generateWithAI(systemPrompt, userMessage, onChunk)
+Tool page calls useGeneration hook → generate(toolId, userMessage)
     ↓
 Client-side rate limit check (src/lib/rate-limit.ts)
     ↓
-POST /api/generate with { systemPrompt, userMessage }
+POST /api/generate with { toolId, userMessage }
+    ↓
+Server-side rate limit check (IP-based, 60 req/hr)
+    ↓
+Server maps toolId → system prompt (prompts never leave the server)
     ↓
 API route streams from Gemini (streamGenerateContent?alt=sse)
     ↓
 SSE chunks parsed → plain text streamed back to client
     ↓
 onChunk callback updates UI progressively (token-by-token)
+    ↓
+Output saved to localStorage history (last 10 per tool)
 ```
 
 ### AI Architecture
 
 Each tool has two exports in its prompt file:
 
-1. **System prompt** (`*_SYSTEM_PROMPT`): Contains the expertise. What makes a great cold email, what to flag in a resume bullet, how to structure a STAR story. This is where the real value lives. These prompts encode specific patterns, anti-patterns, and MBA-context knowledge.
+1. **System prompt** (`*_SYSTEM_PROMPT`): Contains the expertise. Only imported server-side by the API route — never sent to or from the client.
 
-2. **Prompt builder** (`build*Prompt`): Takes the form inputs and formats them into a structured user message. Handles optional fields gracefully.
+2. **Prompt builder** (`build*Prompt`): Takes form inputs and formats them into a structured user message. Used client-side.
 
-The API route (`/api/generate`) is a streaming proxy:
-- Receives system prompt + user message from the client
+The API route (`/api/generate`) is a secure streaming proxy:
+- Receives `toolId` + user message from the client
+- Maps `toolId` to the correct system prompt server-side
+- Applies IP-based rate limiting (60 req/hr)
+- Validates input size (max 5000 chars)
 - Calls Gemini Flash with `streamGenerateContent` (SSE mode)
 - Parses SSE data chunks and streams plain text back to the client
-- Handles errors with human-readable messages (never raw API errors)
 
-### Streaming
+### Shared Hook: useGeneration
 
-The client-side `generateWithAI()` accepts an optional `onChunk` callback. When provided:
-- The response body is read as a stream
-- Each chunk is decoded and appended to the accumulated text
-- `onChunk(fullTextSoFar)` is called on each chunk, which updates React state
-- The UI renders progressively as tokens arrive
+The `useGeneration` hook encapsulates the shared lifecycle across all 6 tool pages:
+- Rate limit checking + error display
+- Loading/output state management
+- Streaming generation via `generateWithAI`
+- Copy-to-clipboard (with customizable extract function)
+- Download as text file
+- History integration (auto-saves to localStorage)
+
+Each tool page still owns its own form, validation, and UI — the hook handles the generate/output/copy/download/history lifecycle.
+
+### History
+
+Each tool stores the last 10 generations in localStorage:
+
+```
+Key: mbakit_history_{tool}
+Value: Array of { id, timestamp, preview, output }
+```
+
+Users can browse, expand, restore, or delete past generations from a collapsible panel at the bottom of each tool page.
 
 ### Rate Limiting
 
-Client-side only, via localStorage:
-
+**Client-side** (UX friction, via localStorage):
 ```
 Key format: mbakit_ratelimit_{tool}_{YYYY-MM-DD}
 Value: integer count of uses today
 Limit: 20 per tool per day
 ```
 
-This isn't meant to be abuse-proof (localStorage is clearable). It's a soft cap to prevent one person from burning the shared Gemini quota accidentally.
+**Server-side** (abuse prevention, via in-memory IP tracking):
+```
+Limit: 60 requests per IP per hour
+Resets on cold start (serverless function)
+```
 
 ### Theme System
 
@@ -102,16 +136,16 @@ This isn't meant to be abuse-proof (localStorage is clearable). It's a soft cap 
 - Defaults to system preference
 - Toggle in navbar persists via next-themes (localStorage)
 - All colors defined as CSS custom properties in `globals.css` (oklch color space)
-- shadcn/ui components automatically respect the theme
 
 ### Data Persistence
 
-The only data stored is in the user's browser localStorage:
+All data is stored in the user's browser localStorage:
 
 | Key | Purpose |
 |-----|---------|
-| `mbakit_sender` | Sender name + school (shared across cold-email and thank-you tools) |
+| `mbakit_sender` | Sender name + school (shared across cold-email, linkedin, thank-you) |
 | `mbakit_ratelimit_*` | Daily usage counters per tool |
+| `mbakit_history_*` | Last 10 generations per tool |
 
 Nothing is sent to any server except the AI generation request itself.
 
@@ -120,18 +154,19 @@ Nothing is sent to any server except the AI generation request itself.
 ## Adding a New Tool
 
 1. Create the prompt file: `src/prompts/your-tool.ts`
-   - Export a system prompt constant with the expertise
-   - Export a prompt builder function that takes form inputs
+   - Export a system prompt constant
+   - Export a prompt builder function
 
-2. Create the page: `src/app/your-tool/page.tsx`
-   - "use client" directive (all tool pages are client components)
-   - Form with PillSelect for options, Input/Textarea for text
-   - Call `generateWithAI(systemPrompt, builtPrompt, setOutput)` for streaming
-   - Include rate limit checks, copy button, try again, and tips
+2. Register in the API route: `src/app/api/generate/route.ts`
+   - Import the system prompt
+   - Add to `PROMPT_MAP`
 
-3. Add to navbar: `src/components/navbar.tsx` (tools array)
+3. Add to tool metadata: `src/lib/tools.ts`
+   - Add entry with name, shortName, description, href, icon
 
-4. Add to landing page: `src/app/page.tsx` (tools array)
+4. Create the page: `src/app/your-tool/page.tsx`
+   - Use `useGeneration` hook for the generate/copy/download/history lifecycle
+   - Build your own form UI
 
 ---
 
@@ -151,4 +186,4 @@ Built for Vercel free tier:
 npm run build   # Produces static pages + one serverless function (/api/generate)
 ```
 
-All tool pages are statically generated. Only `/api/generate` runs as a serverless function. This keeps costs at zero and response times fast.
+All tool pages are statically generated. Only `/api/generate` runs as a serverless function.

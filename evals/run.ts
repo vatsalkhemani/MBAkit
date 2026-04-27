@@ -11,7 +11,7 @@ async function runFixture(f: Fixture): Promise<{ ok: true; text: string; ms: num
     const res = await fetch(`${BASE_URL}/api/generate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ systemPrompt: f.systemPrompt, userMessage: f.userMessage }),
+      body: JSON.stringify({ toolId: f.tool, userMessage: f.userMessage }),
     });
 
     if (!res.ok) {

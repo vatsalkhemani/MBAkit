@@ -7,15 +7,7 @@ import { Sun, Moon, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-
-const tools = [
-  { name: "Cold Email", href: "/cold-email" },
-  { name: "LinkedIn", href: "/linkedin" },
-  { name: "Thank You", href: "/thank-you" },
-  { name: "Resume", href: "/resume" },
-  { name: "STAR Story", href: "/star" },
-  { name: "Coffee Chat", href: "/coffee-chat" },
-];
+import { tools } from "@/lib/tools";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -44,7 +36,7 @@ export function Navbar() {
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
               )}
             >
-              {t.name}
+              {t.shortName}
             </Link>
           ))}
           <Link
@@ -109,7 +101,7 @@ export function Navbar() {
                     : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 )}
               >
-                {t.name}
+                {t.shortName}
               </Link>
             ))}
             <Link

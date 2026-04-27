@@ -1,16 +1,15 @@
-import { COLD_EMAIL_SYSTEM_PROMPT, buildColdEmailPrompt } from "../src/prompts/cold-email";
-import { THANK_YOU_SYSTEM_PROMPT, buildThankYouPrompt } from "../src/prompts/thank-you";
-import { RESUME_SYSTEM_PROMPT, buildResumePrompt } from "../src/prompts/resume";
-import { STAR_SYSTEM_PROMPT, buildStarPrompt } from "../src/prompts/star";
-import { COFFEE_CHAT_SYSTEM_PROMPT, buildCoffeeChatPrompt } from "../src/prompts/coffee-chat";
-import { LINKEDIN_SYSTEM_PROMPT, buildLinkedInPrompt } from "../src/prompts/linkedin";
+import { buildColdEmailPrompt } from "../src/prompts/cold-email";
+import { buildThankYouPrompt } from "../src/prompts/thank-you";
+import { buildResumePrompt } from "../src/prompts/resume";
+import { buildStarPrompt } from "../src/prompts/star";
+import { buildCoffeeChatPrompt } from "../src/prompts/coffee-chat";
+import { buildLinkedInPrompt } from "../src/prompts/linkedin";
 
 export type Fixture = {
   id: string;
   tool: "cold-email" | "thank-you" | "resume" | "star" | "coffee-chat" | "linkedin";
   mode: "sparse" | "rich";
   label: string;
-  systemPrompt: string;
   userMessage: string;
 };
 
@@ -20,7 +19,6 @@ export const FIXTURES: Fixture[] = [
     tool: "cold-email",
     mode: "sparse",
     label: "Minimal input — just name, role, company, alumni connection",
-    systemPrompt: COLD_EMAIL_SYSTEM_PROMPT,
     userMessage: buildColdEmailPrompt({
       senderName: "Vatsal Khemani",
       school: "Wharton MBA '28",
@@ -39,7 +37,6 @@ export const FIXTURES: Fixture[] = [
     tool: "cold-email",
     mode: "rich",
     label: "Rich input — personal detail, career-switcher context",
-    systemPrompt: COLD_EMAIL_SYSTEM_PROMPT,
     userMessage: buildColdEmailPrompt({
       senderName: "Priya Patel",
       school: "Wharton MBA '28",
@@ -59,7 +56,6 @@ export const FIXTURES: Fixture[] = [
     tool: "thank-you",
     mode: "sparse",
     label: "Minimal input — 60-second coffee chat thank-you",
-    systemPrompt: THANK_YOU_SYSTEM_PROMPT,
     userMessage: buildThankYouPrompt({
       senderName: "Vatsal",
       recipientName: "Amit",
@@ -75,7 +71,6 @@ export const FIXTURES: Fixture[] = [
     tool: "thank-you",
     mode: "rich",
     label: "Rich input — final-round interview with specifics",
-    systemPrompt: THANK_YOU_SYSTEM_PROMPT,
     userMessage: buildThankYouPrompt({
       senderName: "Priya",
       recipientName: "Jordan",
@@ -92,7 +87,6 @@ export const FIXTURES: Fixture[] = [
     tool: "resume",
     mode: "sparse",
     label: "Vague bullets with no metrics",
-    systemPrompt: RESUME_SYSTEM_PROMPT,
     userMessage: buildResumePrompt({
       bullets: `- Responsible for managing social media for a nonprofit
 - Helped with customer research for a startup
@@ -106,7 +100,6 @@ export const FIXTURES: Fixture[] = [
     tool: "resume",
     mode: "rich",
     label: "Career-switcher bullets (military) with some metrics, targeting consulting",
-    systemPrompt: RESUME_SYSTEM_PROMPT,
     userMessage: buildResumePrompt({
       bullets: `- Platoon leader for 40 soldiers during 9-month deployment, maintained 100% equipment readiness
 - Coordinated logistics for battalion-wide training exercise involving 600 personnel across 3 locations
@@ -121,7 +114,6 @@ export const FIXTURES: Fixture[] = [
     tool: "star",
     mode: "sparse",
     label: "Two-sentence raw story",
-    systemPrompt: STAR_SYSTEM_PROMPT,
     userMessage: buildStarPrompt({
       rawStory: "I led a project that improved sales at my company. We had good results and my boss was happy.",
       competency: "Leadership",
@@ -133,7 +125,6 @@ export const FIXTURES: Fixture[] = [
     tool: "star",
     mode: "rich",
     label: "Detailed raw story for Amazon LP interview",
-    systemPrompt: STAR_SYSTEM_PROMPT,
     userMessage: buildStarPrompt({
       rawStory: `At my last company (a fintech startup, 80 people), our mobile app's 7-day retention was stuck at 22% for six months. I was the PM on the growth team. Everyone wanted to add more features but I pushed back. I pulled 30 days of funnel data and noticed 60% of drop-off happened between first-launch and second session. I ran 12 user interviews over two weeks and learned most users didn't understand the core value prop because our onboarding assumed crypto knowledge. My eng lead disagreed — he thought we should ship a referral feature instead because it was faster. I proposed we run both in parallel as A/B tests. I built the new onboarding with one designer in 3 weeks. The referral shipped in 1 week. Retention went from 22% to 34% with the new onboarding. Referral barely moved the needle. We adopted onboarding redesign as a quarterly rhythm after that.`,
       competency: "Disagree and Commit",
@@ -146,7 +137,6 @@ export const FIXTURES: Fixture[] = [
     tool: "coffee-chat",
     mode: "sparse",
     label: "Minimal — senior person, no background given",
-    systemPrompt: COFFEE_CHAT_SYSTEM_PROMPT,
     userMessage: buildCoffeeChatPrompt({
       personName: "Rachel Wong",
       personRole: "SVP Product",
@@ -161,7 +151,6 @@ export const FIXTURES: Fixture[] = [
     tool: "coffee-chat",
     mode: "rich",
     label: "Career-switcher, specific decision to navigate",
-    systemPrompt: COFFEE_CHAT_SYSTEM_PROMPT,
     userMessage: buildCoffeeChatPrompt({
       personName: "David Kim",
       personRole: "Principal PM",
@@ -179,7 +168,6 @@ export const FIXTURES: Fixture[] = [
     tool: "cold-email",
     mode: "rich",
     label: "Referral-based cold email (mutual connection, not alumni/LinkedIn)",
-    systemPrompt: COLD_EMAIL_SYSTEM_PROMPT,
     userMessage: buildColdEmailPrompt({
       senderName: "James Chen",
       school: "Wharton MBA '28",
@@ -198,7 +186,6 @@ export const FIXTURES: Fixture[] = [
     tool: "thank-you",
     mode: "rich",
     label: "Class speaker thank-you with one specific insight to reference",
-    systemPrompt: THANK_YOU_SYSTEM_PROMPT,
     userMessage: buildThankYouPrompt({
       senderName: "Priya",
       recipientName: "Professor Liu",
@@ -214,7 +201,6 @@ export const FIXTURES: Fixture[] = [
     tool: "resume",
     mode: "rich",
     label: "Already-polished bullets needing only minor tightening",
-    systemPrompt: RESUME_SYSTEM_PROMPT,
     userMessage: buildResumePrompt({
       bullets: `- Built and shipped a pricing A/B test that lifted conversion 18% and generated $1.2M incremental ARR in Q3
 - Led a team of 6 (3 engineers, 2 designers, 1 data scientist) to launch our mobile app, reaching 45K DAUs in 4 months
@@ -228,7 +214,6 @@ export const FIXTURES: Fixture[] = [
     tool: "star",
     mode: "rich",
     label: "Consulting PEI story — personal impact dimension",
-    systemPrompt: STAR_SYSTEM_PROMPT,
     userMessage: buildStarPrompt({
       rawStory: `During my 2 years at Bain before the MBA, I was staffed on a telco merger for 8 months. Our team of 4 was helping the client consolidate two network-operations orgs. I was the most junior person but noticed the workstream lead was building a solution based on assumptions that didn't match what I was hearing from operators on the ground. I flagged it twice in team meetings and got brushed off. I spent a weekend building a counter-model with data from 15 operator interviews I ran, then walked my manager through it Monday morning. She was skeptical but agreed to let me present to the partner. The partner adopted the new model. We ended up saving the client ~40 FTE roles compared to the original plan, which was a better outcome because their attrition was already high. I learned that at junior levels, data beats hierarchy, but you have to do the work to bring the data.`,
       competency: "Personal Impact",
@@ -240,7 +225,6 @@ export const FIXTURES: Fixture[] = [
     tool: "coffee-chat",
     mode: "rich",
     label: "Peer-level recent MBA grad at an early-stage startup",
-    systemPrompt: COFFEE_CHAT_SYSTEM_PROMPT,
     userMessage: buildCoffeeChatPrompt({
       personName: "Sam Park",
       personRole: "Founding PM",
@@ -258,7 +242,6 @@ export const FIXTURES: Fixture[] = [
     tool: "cold-email",
     mode: "rich",
     label: "Cold email to VP at a boutique firm (not FAANG/unicorn), career switcher from healthcare",
-    systemPrompt: COLD_EMAIL_SYSTEM_PROMPT,
     userMessage: buildColdEmailPrompt({
       senderName: "Sneha Reddy",
       school: "Wharton MBA '28",
@@ -277,7 +260,6 @@ export const FIXTURES: Fixture[] = [
     tool: "thank-you",
     mode: "sparse",
     label: "Post-networking-event thank-you (one of 50 attendees, tough to differentiate)",
-    systemPrompt: THANK_YOU_SYSTEM_PROMPT,
     userMessage: buildThankYouPrompt({
       senderName: "Marcus",
       recipientName: "Elena",
@@ -293,7 +275,6 @@ export const FIXTURES: Fixture[] = [
     tool: "resume",
     mode: "rich",
     label: "Finance bullets targeting buy-side investing",
-    systemPrompt: RESUME_SYSTEM_PROMPT,
     userMessage: buildResumePrompt({
       bullets: `- Analyzed 12 public companies across industrials sector using DCF, comps, and LBO models, produced 30-page investment thesis
 - Built proprietary screening tool in Python that flagged 8 acquisition targets for MD team, 2 of which became live deals
@@ -307,7 +288,6 @@ export const FIXTURES: Fixture[] = [
     tool: "star",
     mode: "rich",
     label: "Tech PM interview, Customer Obsession competency, launch-that-failed story",
-    systemPrompt: STAR_SYSTEM_PROMPT,
     userMessage: buildStarPrompt({
       rawStory: `I was PM on a B2B SaaS team of 30 people at my last company. We spent 4 months building a "smart scheduling" feature for enterprise admins after they asked for it in 5 consecutive user research sessions. We shipped it with a big launch, press, and training materials. Within 6 weeks, adoption was flat — 4% of target users activated it. I was devastated but dug in. I ran 20 follow-up customer calls and discovered the feature solved a problem admins talked about in interviews but didn't actually experience — they only complained about scheduling when it broke, not daily, so the value prop fell flat. I killed the feature and wrote a postmortem explaining the gap between "stated pain" and "felt pain." The postmortem became required reading for new PMs at the company.`,
       competency: "Customer Obsession",
@@ -321,7 +301,6 @@ export const FIXTURES: Fixture[] = [
     tool: "linkedin",
     mode: "sparse",
     label: "Connection note — alumni, no personal detail, must stay under 300 chars",
-    systemPrompt: LINKEDIN_SYSTEM_PROMPT,
     userMessage: buildLinkedInPrompt({
       senderName: "Vatsal Khemani",
       school: "Wharton MBA '28",
@@ -342,7 +321,6 @@ export const FIXTURES: Fixture[] = [
     tool: "linkedin",
     mode: "rich",
     label: "Connection note — career switcher with specific talk reference, premium 300-char budget",
-    systemPrompt: LINKEDIN_SYSTEM_PROMPT,
     userMessage: buildLinkedInPrompt({
       senderName: "Priya Patel",
       school: "Wharton MBA '28",
@@ -363,7 +341,6 @@ export const FIXTURES: Fixture[] = [
     tool: "linkedin",
     mode: "sparse",
     label: "InMail — cold outreach to a senior PM, no personal detail",
-    systemPrompt: LINKEDIN_SYSTEM_PROMPT,
     userMessage: buildLinkedInPrompt({
       senderName: "James Chen",
       school: "Wharton MBA '28",
@@ -384,7 +361,6 @@ export const FIXTURES: Fixture[] = [
     tool: "linkedin",
     mode: "rich",
     label: "InMail — referral-driven with specific detail, asking for 20 minutes",
-    systemPrompt: LINKEDIN_SYSTEM_PROMPT,
     userMessage: buildLinkedInPrompt({
       senderName: "Sneha Reddy",
       school: "Wharton MBA '28",
@@ -405,7 +381,6 @@ export const FIXTURES: Fixture[] = [
     tool: "linkedin",
     mode: "rich",
     label: "Connection note — engaged with their recent post, cross-background",
-    systemPrompt: LINKEDIN_SYSTEM_PROMPT,
     userMessage: buildLinkedInPrompt({
       senderName: "Marcus Lee",
       school: "Wharton MBA '28",
@@ -427,7 +402,6 @@ export const FIXTURES: Fixture[] = [
     tool: "coffee-chat",
     mode: "rich",
     label: "International grad at a non-US market leader, specific regulatory context",
-    systemPrompt: COFFEE_CHAT_SYSTEM_PROMPT,
     userMessage: buildCoffeeChatPrompt({
       personName: "Ayesha Kapoor",
       personRole: "Head of Product - India",

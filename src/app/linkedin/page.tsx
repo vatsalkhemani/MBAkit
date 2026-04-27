@@ -1,18 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { PillSelect } from "@/components/pill-select";
-import { Copy, RefreshCw, Loader2, Lightbulb } from "lucide-react";
+import { Copy, RefreshCw, Loader2, Lightbulb, Download } from "lucide-react";
 import { MarkdownOutput } from "@/components/markdown-output";
-import { generateWithAI } from "@/lib/ai";
-import { checkRateLimit, incrementUsage } from "@/lib/rate-limit";
-import { LINKEDIN_SYSTEM_PROMPT, buildLinkedInPrompt } from "@/prompts/linkedin";
+import { HistoryPanel } from "@/components/history-panel";
+import { useGeneration } from "@/lib/use-generation";
+import { safeGetJSON, safeSetJSON } from "@/lib/storage";
+import { buildLinkedInPrompt } from "@/prompts/linkedin";
 
-const TOOL_NAME = "linkedin";
+const TOOL_ID = "linkedin";
 
 const messageTypeOptions = [
   { label: "Connection note", value: "connection-note" },
@@ -60,23 +61,24 @@ export default function LinkedInPage() {
   const [personalDetail, setPersonalDetail] = useState("");
   const [tone, setTone] = useState("warm-professional");
 
-  const [output, setOutput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [copied, setCopied] = useState(false);
+  const extractForCopy = useCallback(
+    (o: string) => extractMessageForCopy(o, messageType),
+    [messageType]
+  );
+  const { output, loading, error, copied, generate, handleCopy, handleDownload, setOutput, setError, history } =
+    useGeneration({ toolName: TOOL_ID, extractForCopy });
 
   useEffect(() => {
-    const saved = localStorage.getItem("mbakit_sender");
+    const saved = safeGetJSON<{ name?: string; school?: string }>("mbakit_sender");
     if (saved) {
-      const { name, school: s } = JSON.parse(saved);
-      if (name) setSenderName(name);
-      if (s) setSchool(s);
+      if (saved.name) setSenderName(saved.name);
+      if (saved.school) setSchool(saved.school);
     }
   }, []);
 
   useEffect(() => {
     if (senderName || school) {
-      localStorage.setItem("mbakit_sender", JSON.stringify({ name: senderName, school }));
+      safeSetJSON("mbakit_sender", { name: senderName, school });
     }
   }, [senderName, school]);
 
@@ -96,11 +98,6 @@ export default function LinkedInPage() {
   }
 
   async function handleGenerate() {
-    const { allowed } = checkRateLimit(TOOL_NAME);
-    if (!allowed) {
-      setError("Daily limit reached. Come back tomorrow.");
-      return;
-    }
     if (!recipientName || !recipientCompany) {
       setError("Fill in at least the recipient's name and company.");
       return;
@@ -110,40 +107,25 @@ export default function LinkedInPage() {
       return;
     }
 
-    setLoading(true);
-    setError("");
-    setOutput("");
-
-    try {
-      const prompt = buildLinkedInPrompt({
-        senderName: senderName || "[Your Name]",
-        school: school || "[Your School]",
-        recipientName,
-        recipientRole,
-        recipientCompany,
-        messageType,
-        tier,
-        connectionContext,
-        connectionDetail,
-        goal,
-        personalDetail,
-        tone,
-      });
-      const result = await generateWithAI(LINKEDIN_SYSTEM_PROMPT, prompt, setOutput);
-      setOutput(result);
-      incrementUsage(TOOL_NAME);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong. Try again?");
-    } finally {
-      setLoading(false);
-    }
+    const prompt = buildLinkedInPrompt({
+      senderName: senderName || "[Your Name]",
+      school: school || "[Your School]",
+      recipientName,
+      recipientRole,
+      recipientCompany,
+      messageType,
+      tier,
+      connectionContext,
+      connectionDetail,
+      goal,
+      personalDetail,
+      tone,
+    });
+    await generate(TOOL_ID, prompt);
   }
 
-  function handleCopy() {
-    const messageOnly = extractMessageForCopy(output, messageType);
-    navigator.clipboard.writeText(messageOnly);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  function handleCopyMsg() {
+    handleCopy();
   }
 
   const messageBody = output ? output.split("---")[0].trim() : "";
@@ -235,9 +217,13 @@ export default function LinkedInPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleCopy}>
+            <Button variant="outline" size="sm" onClick={handleCopyMsg}>
               <Copy className="mr-1.5 h-3.5 w-3.5" />
               {copied ? "Copied!" : "Copy message"}
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleDownload}>
+              <Download className="mr-1.5 h-3.5 w-3.5" />
+              Download
             </Button>
             <Button variant="outline" size="sm" onClick={handleGenerate} disabled={loading}>
               <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
@@ -264,6 +250,12 @@ export default function LinkedInPage() {
           </span>
         </div>
       )}
+      <HistoryPanel
+        getEntries={history.getEntries}
+        removeEntry={history.removeEntry}
+        clearAll={history.clearAll}
+        onRestore={setOutput}
+      />
     </div>
   );
 }

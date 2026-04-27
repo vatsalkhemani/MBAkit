@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { PillSelect } from "@/components/pill-select";
-import { Copy, RefreshCw, Loader2, Lightbulb } from "lucide-react";
+import { Copy, RefreshCw, Loader2, Lightbulb, Download } from "lucide-react";
 import { MarkdownOutput } from "@/components/markdown-output";
-import { generateWithAI } from "@/lib/ai";
-import { checkRateLimit, incrementUsage } from "@/lib/rate-limit";
-import { RESUME_SYSTEM_PROMPT, buildResumePrompt } from "@/prompts/resume";
+import { HistoryPanel } from "@/components/history-panel";
+import { useGeneration } from "@/lib/use-generation";
+import { buildResumePrompt } from "@/prompts/resume";
 
-const TOOL_NAME = "resume";
+const TOOL_ID = "resume";
 
 const roleOptions = [
   { label: "Tech PM", value: "tech PM" },
@@ -33,10 +33,9 @@ export default function ResumePage() {
   const [bullets, setBullets] = useState("");
   const [targetRole, setTargetRole] = useState("");
   const [goal, setGoal] = useState("sharpen existing");
-  const [output, setOutput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [copied, setCopied] = useState(false);
+
+  const { output, loading, error, copied, generate, handleCopy, handleDownload, setOutput, setError, history } =
+    useGeneration({ toolName: TOOL_ID });
 
   function loadExample() {
     setBullets("Managed a cross-functional team to deliver a new product feature on time\nHelped improve customer retention through data analysis and insights\nWorked on the company's pricing strategy and helped increase revenue");
@@ -45,36 +44,13 @@ export default function ResumePage() {
   }
 
   async function handleGenerate() {
-    const { allowed } = checkRateLimit(TOOL_NAME);
-    if (!allowed) {
-      setError("Daily limit reached. Come back tomorrow.");
-      return;
-    }
     if (!bullets.trim()) {
       setError("Paste at least one resume bullet.");
       return;
     }
 
-    setLoading(true);
-    setError("");
-    setOutput("");
-
-    try {
-      const prompt = buildResumePrompt({ bullets, targetRole, goal });
-      const result = await generateWithAI(RESUME_SYSTEM_PROMPT, prompt, setOutput);
-      setOutput(result);
-      incrementUsage(TOOL_NAME);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong. Try again?");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function handleCopy() {
-    navigator.clipboard.writeText(output);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    const prompt = buildResumePrompt({ bullets, targetRole, goal });
+    await generate(TOOL_ID, prompt);
   }
 
   return (
@@ -129,6 +105,10 @@ export default function ResumePage() {
               <Copy className="mr-1.5 h-3.5 w-3.5" />
               {copied ? "Copied!" : "Copy all"}
             </Button>
+            <Button variant="outline" size="sm" onClick={handleDownload}>
+              <Download className="mr-1.5 h-3.5 w-3.5" />
+              Download
+            </Button>
             <Button variant="outline" size="sm" onClick={handleGenerate} disabled={loading}>
               <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
               Try again
@@ -143,6 +123,12 @@ export default function ResumePage() {
           <span>Use the XYZ formula: Accomplished [X] as measured by [Y] by doing [Z]. Lead with a strong verb, quantify everything.</span>
         </div>
       )}
+      <HistoryPanel
+        getEntries={history.getEntries}
+        removeEntry={history.removeEntry}
+        clearAll={history.clearAll}
+        onRestore={setOutput}
+      />
     </div>
   );
 }

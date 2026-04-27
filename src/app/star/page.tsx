@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { PillSelect } from "@/components/pill-select";
-import { Copy, RefreshCw, Loader2, Lightbulb } from "lucide-react";
+import { Copy, RefreshCw, Loader2, Lightbulb, Download } from "lucide-react";
 import { MarkdownOutput } from "@/components/markdown-output";
-import { generateWithAI } from "@/lib/ai";
-import { checkRateLimit, incrementUsage } from "@/lib/rate-limit";
-import { STAR_SYSTEM_PROMPT, buildStarPrompt } from "@/prompts/star";
+import { HistoryPanel } from "@/components/history-panel";
+import { useGeneration } from "@/lib/use-generation";
+import { buildStarPrompt } from "@/prompts/star";
 
-const TOOL_NAME = "star";
+const TOOL_ID = "star";
 
 const competencyOptions = [
   { label: "Leadership", value: "leadership" },
@@ -37,10 +37,9 @@ export default function StarPage() {
   const [rawStory, setRawStory] = useState("");
   const [competency, setCompetency] = useState("");
   const [interviewType, setInterviewType] = useState("");
-  const [output, setOutput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [copied, setCopied] = useState(false);
+
+  const { output, loading, error, copied, generate, handleCopy, handleDownload, setOutput, setError, history } =
+    useGeneration({ toolName: TOOL_ID });
 
   function loadExample() {
     setRawStory("At my last job I noticed our onboarding flow was causing a lot of drop-off. I pulled the funnel data and found that 60% of users were leaving at step 3 where we asked for company size. I hypothesized the question felt too invasive for a free trial. I convinced my manager to let me run an A/B test removing that field. Worked with engineering to set it up in two days. The new version had 35% better completion and we didn't lose any meaningful segmentation data. We rolled it out to all users and it became the template for how we evaluated friction in other flows.");
@@ -49,36 +48,13 @@ export default function StarPage() {
   }
 
   async function handleGenerate() {
-    const { allowed } = checkRateLimit(TOOL_NAME);
-    if (!allowed) {
-      setError("Daily limit reached. Come back tomorrow.");
-      return;
-    }
     if (!rawStory.trim()) {
       setError("Describe what happened. It can be messy, the tool will structure it.");
       return;
     }
 
-    setLoading(true);
-    setError("");
-    setOutput("");
-
-    try {
-      const prompt = buildStarPrompt({ rawStory, competency, interviewType });
-      const result = await generateWithAI(STAR_SYSTEM_PROMPT, prompt, setOutput);
-      setOutput(result);
-      incrementUsage(TOOL_NAME);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong. Try again?");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function handleCopy() {
-    navigator.clipboard.writeText(output);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    const prompt = buildStarPrompt({ rawStory, competency, interviewType });
+    await generate(TOOL_ID, prompt);
   }
 
   return (
@@ -133,6 +109,10 @@ export default function StarPage() {
               <Copy className="mr-1.5 h-3.5 w-3.5" />
               {copied ? "Copied!" : "Copy story"}
             </Button>
+            <Button variant="outline" size="sm" onClick={handleDownload}>
+              <Download className="mr-1.5 h-3.5 w-3.5" />
+              Download
+            </Button>
             <Button variant="outline" size="sm" onClick={handleGenerate} disabled={loading}>
               <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
               Try different framing
@@ -147,6 +127,12 @@ export default function StarPage() {
           <span>Keep Situation + Task to 20%. Use &quot;I,&quot; not &quot;we.&quot; Quantify everything in the Result.</span>
         </div>
       )}
+      <HistoryPanel
+        getEntries={history.getEntries}
+        removeEntry={history.removeEntry}
+        clearAll={history.clearAll}
+        onRestore={setOutput}
+      />
     </div>
   );
 }

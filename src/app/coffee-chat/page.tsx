@@ -1,18 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { PillSelect } from "@/components/pill-select";
-import { Copy, RefreshCw, Loader2, Lightbulb } from "lucide-react";
+import { Copy, RefreshCw, Loader2, Lightbulb, Download } from "lucide-react";
 import { MarkdownOutput } from "@/components/markdown-output";
-import { generateWithAI } from "@/lib/ai";
-import { checkRateLimit, incrementUsage } from "@/lib/rate-limit";
-import { COFFEE_CHAT_SYSTEM_PROMPT, buildCoffeeChatPrompt } from "@/prompts/coffee-chat";
+import { HistoryPanel } from "@/components/history-panel";
+import { useGeneration } from "@/lib/use-generation";
+import { buildCoffeeChatPrompt } from "@/prompts/coffee-chat";
 
-const TOOL_NAME = "coffee-chat";
+const TOOL_ID = "coffee-chat";
 
 const contextOptions = [
   { label: "Alumni", value: "alumni from my school" },
@@ -30,10 +30,10 @@ export default function CoffeeChatPage() {
   const [context, setContext] = useState("alumni from my school");
   const [yourBackground, setYourBackground] = useState("");
   const [whatToLearn, setWhatToLearn] = useState("");
-  const [output, setOutput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [copied, setCopied] = useState(false);
+
+  const extractForCopy = useCallback((o: string) => o.split("---")[0].trim(), []);
+  const { output, loading, error, copied, generate, handleCopy, handleDownload, setOutput, setError, history } =
+    useGeneration({ toolName: TOOL_ID, extractForCopy });
 
   function loadExample() {
     setPersonName("James Park");
@@ -45,44 +45,24 @@ export default function CoffeeChatPage() {
   }
 
   async function handleGenerate() {
-    const { allowed } = checkRateLimit(TOOL_NAME);
-    if (!allowed) {
-      setError("Daily limit reached. Come back tomorrow.");
-      return;
-    }
     if (!personCompany) {
       setError("Fill in at least the company name.");
       return;
     }
 
-    setLoading(true);
-    setError("");
-    setOutput("");
-
-    try {
-      const prompt = buildCoffeeChatPrompt({
-        personName: personName || "the person",
-        personRole,
-        personCompany,
-        context,
-        yourBackground,
-        whatToLearn,
-      });
-      const result = await generateWithAI(COFFEE_CHAT_SYSTEM_PROMPT, prompt, setOutput);
-      setOutput(result);
-      incrementUsage(TOOL_NAME);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong. Try again?");
-    } finally {
-      setLoading(false);
-    }
+    const prompt = buildCoffeeChatPrompt({
+      personName: personName || "the person",
+      personRole,
+      personCompany,
+      context,
+      yourBackground,
+      whatToLearn,
+    });
+    await generate(TOOL_ID, prompt);
   }
 
-  function handleCopy() {
-    const questionsOnly = output.split("---")[0].trim();
-    navigator.clipboard.writeText(questionsOnly);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  function handleCopyPrep() {
+    handleCopy();
   }
 
   const mainContent = output ? output.split("---")[0].trim() : "";
@@ -162,9 +142,13 @@ export default function CoffeeChatPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleCopy}>
+            <Button variant="outline" size="sm" onClick={handleCopyPrep}>
               <Copy className="mr-1.5 h-3.5 w-3.5" />
               {copied ? "Copied!" : "Copy prep"}
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleDownload}>
+              <Download className="mr-1.5 h-3.5 w-3.5" />
+              Download
             </Button>
             <Button variant="outline" size="sm" onClick={handleGenerate} disabled={loading}>
               <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
@@ -187,6 +171,12 @@ export default function CoffeeChatPage() {
           <span>The best coffee chats feel like conversations, not interviews. Ask questions that show genuine curiosity.</span>
         </div>
       )}
+      <HistoryPanel
+        getEntries={history.getEntries}
+        removeEntry={history.removeEntry}
+        clearAll={history.clearAll}
+        onRestore={setOutput}
+      />
     </div>
   );
 }

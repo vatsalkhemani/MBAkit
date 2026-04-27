@@ -1,11 +1,65 @@
 import { NextRequest } from "next/server";
+import { COLD_EMAIL_SYSTEM_PROMPT } from "@/prompts/cold-email";
+import { LINKEDIN_SYSTEM_PROMPT } from "@/prompts/linkedin";
+import { THANK_YOU_SYSTEM_PROMPT } from "@/prompts/thank-you";
+import { RESUME_SYSTEM_PROMPT } from "@/prompts/resume";
+import { STAR_SYSTEM_PROMPT } from "@/prompts/star";
+import { COFFEE_CHAT_SYSTEM_PROMPT } from "@/prompts/coffee-chat";
+
+const PROMPT_MAP: Record<string, string> = {
+  "cold-email": COLD_EMAIL_SYSTEM_PROMPT,
+  linkedin: LINKEDIN_SYSTEM_PROMPT,
+  "thank-you": THANK_YOU_SYSTEM_PROMPT,
+  resume: RESUME_SYSTEM_PROMPT,
+  star: STAR_SYSTEM_PROMPT,
+  "coffee-chat": COFFEE_CHAT_SYSTEM_PROMPT,
+};
+
+const MAX_MESSAGE_LENGTH = 5000;
+
+// Simple in-memory IP rate limiter (resets on cold start, but good enough for abuse prevention)
+const ipCounts = new Map<string, { count: number; resetAt: number }>();
+const SERVER_RATE_LIMIT = 60; // requests per window
+const WINDOW_MS = 60 * 60 * 1000; // 1 hour
+
+function checkServerRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = ipCounts.get(ip);
+  if (!entry || now > entry.resetAt) {
+    ipCounts.set(ip, { count: 1, resetAt: now + WINDOW_MS });
+    return true;
+  }
+  entry.count++;
+  return entry.count <= SERVER_RATE_LIMIT;
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const { systemPrompt, userMessage } = await req.json();
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    if (!checkServerRateLimit(ip)) {
+      return Response.json(
+        { error: "Too many requests. Try again in a bit." },
+        { status: 429 }
+      );
+    }
 
-    if (!systemPrompt || !userMessage) {
-      return Response.json({ error: "Missing prompt or message" }, { status: 400 });
+    const body = await req.json();
+    const { toolId, userMessage } = body;
+
+    if (!toolId || !userMessage) {
+      return Response.json({ error: "Missing toolId or message" }, { status: 400 });
+    }
+
+    const systemPrompt = PROMPT_MAP[toolId];
+    if (!systemPrompt) {
+      return Response.json({ error: "Unknown tool" }, { status: 400 });
+    }
+
+    if (typeof userMessage !== "string" || userMessage.length > MAX_MESSAGE_LENGTH) {
+      return Response.json(
+        { error: `Message too long. Max ${MAX_MESSAGE_LENGTH} characters.` },
+        { status: 400 }
+      );
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
@@ -42,7 +96,10 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: message }, { status: res.status });
     }
 
-    // Stream the SSE response back to the client as plain text chunks
+    if (!res.body) {
+      return Response.json({ error: "No response from AI" }, { status: 502 });
+    }
+
     const stream = new ReadableStream({
       async start(controller) {
         const reader = res.body!.getReader();
@@ -83,10 +140,7 @@ export async function POST(req: NextRequest) {
     });
 
     return new Response(stream, {
-      headers: {
-        "Content-Type": "text/plain; charset=utf-8",
-        "Transfer-Encoding": "chunked",
-      },
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   } catch (e) {
     console.error("Generate error:", e);

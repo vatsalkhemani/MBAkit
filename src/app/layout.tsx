@@ -16,9 +16,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://mbakit.vercel.app"),
   title: "MBAKit - Sharp tools for MBA students",
   description:
     "Free toolkit of small, sharp tools for MBA students. No sign-up, no fluff. Cold emails, thank-you notes, resume bullets, STAR stories, coffee chat prep.",
+  openGraph: {
+    title: "MBAKit - Sharp tools for MBA students",
+    description:
+      "Free AI tools for cold emails, thank-you notes, resume bullets, STAR stories, and coffee chat prep. No sign-up required.",
+    url: "https://mbakit.vercel.app",
+    siteName: "MBAKit",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "MBAKit - Sharp tools for MBA students",
+    description:
+      "Free AI tools for cold emails, thank-you notes, resume bullets, STAR stories, and coffee chat prep.",
+  },
 };
 
 export default function RootLayout({
