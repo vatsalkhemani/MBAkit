@@ -36,20 +36,22 @@ export default function FeedbackPage() {
     setSubmitting(true);
     setError("");
 
-    try {
-      const res = await fetch("/api/feedback", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ category, tool, message, name, contact }),
-      });
-      if (res.ok) {
+    const endpoint = process.env.NEXT_PUBLIC_FEEDBACK_ENDPOINT;
+
+    if (endpoint) {
+      try {
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ category, tool, message, name, contact }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         setSubmitted(true);
-      } else {
-        // API unavailable or errored, fall back to mailto
+      } catch {
+        // Fall through to mailto
         openMailto();
       }
-    } catch {
-      // Network error, fall back to mailto
+    } else {
       openMailto();
     }
 

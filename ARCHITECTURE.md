@@ -23,8 +23,7 @@ src/
 │   ├── coffee-chat/page.tsx    # Coffee Chat Prep
 │   ├── feedback/page.tsx       # Feedback form
 │   └── api/
-│       ├── generate/route.ts   # Streaming AI proxy (toolId-based, server-side rate limited)
-│       └── feedback/route.ts   # Email feedback API (Resend, with mailto fallback)
+│       └── generate/route.ts   # Streaming AI proxy (toolId-based, server-side rate limited)
 ├── components/
 │   ├── navbar.tsx              # Navigation with mobile menu + theme toggle
 │   ├── pill-select.tsx         # Pill-shaped button group for single-select options
@@ -176,7 +175,6 @@ Nothing is sent to any server except the AI generation request itself.
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `NVIDIA_API_KEY` | Yes | NVIDIA NIM API key ([get one free](https://build.nvidia.com)) |
-| `RESEND_API_KEY` | No | Resend API key for email feedback ([get one free](https://resend.com)). Without it, feedback falls back to mailto. |
 
 ---
 
