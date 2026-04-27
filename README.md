@@ -1,6 +1,6 @@
 # MBAKit
 
-**Free tools so you can focus on the conversations, not the drafting.**
+**[mbakit.vercel.app](https://mbakit.vercel.app)** | Free tools so you can focus on the conversations, not the drafting.
 
 The MBA is a stretch of constant networking, coffee chats, info sessions, and follow-ups. Every message, email, and piece of polish needs context, and most of us end up writing the same setup prompt to an LLM over and over just to get something usable out. That overhead adds up fast, and it pulls focus away from the actual interaction that matters.
 
@@ -78,7 +78,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000). Or visit the live site at **[mbakit.vercel.app](https://mbakit.vercel.app)**.
 
 ---
 
