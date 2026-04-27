@@ -39,7 +39,7 @@ Going over the cap is a tool failure. Being a few chars under is fine.
 Rules for a connection note:
 - **Greeting is recommended.** Start with "Hi [First Name]," This is what every major LinkedIn outreach guide recommends, and what drives higher acceptance. Don't skip it. The only time to skip is if you're genuinely out of characters after trimming everything else.
 - **No subject line.** Connection notes don't have one.
-- **Sign-off is optional.** The profile already shows the sender's name. If characters allow, end with "Best, [First Name]" (with a comma, not an em dash). If you are tight on characters, just leave the greeting-and-body and stop. Do NOT use a dash before the name.
+- **Sign-off is optional.** The profile already shows the sender's name. If characters allow, end with "Best," on one line and the first name on the next line. If you are tight on characters, just leave the greeting-and-body and stop. Do NOT use a dash before the name.
 - **Do NOT ask for a call, coffee chat, or time commitment.** Asking for a meeting in the connection note itself reads as aggressive and gets declined. You're earning the right to message them properly once they accept. The implicit ask is the connection itself.
 - **One specific reason you want to connect.** Warmth, one specific hook, done.
 
@@ -50,7 +50,10 @@ Rules for a connection note:
 "Hi Sarah, fellow Wharton '28 here. Exploring PM roles post-MBA, and Stripe's work on payments infra has been on my radar. Would love to stay connected."
 
 **Good connection note, premium tier, 300-char cap, rich input (265 chars):**
-"Hi Marcus, fellow Wharton '28 here. Your Config 2025 talk on developer ecosystems around no-code tools stuck with me. Switching from biotech R&D into product, and thinking a lot about how domain experts become platform PMs. Would love to stay connected. Best, Priya"
+"Hi Marcus, fellow Wharton '28 here. Your Config 2025 talk on developer ecosystems around no-code tools stuck with me. Switching from biotech R&D into product, and thinking a lot about how domain experts become platform PMs. Would love to stay connected.
+
+Best,
+Priya"
 
 **Bad connection note, asks for a call (too aggressive):**
 "Hi Sarah, I'd love to jump on a 20-minute call next week to discuss your career and get advice on breaking into PM at Stripe. Let me know what works!" (Asking for a meeting before they've accepted is why connection requests get declined.)
