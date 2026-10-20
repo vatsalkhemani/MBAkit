@@ -89,7 +89,7 @@ The API route (`/api/generate`) is a secure streaming proxy:
 - Maps `toolId` to the correct system prompt server-side
 - Applies IP-based rate limiting (60 req/hr)
 - Validates input size (max 5000 chars)
-- Calls NVIDIA NIM (Mistral Small 4) via OpenAI-compatible chat completions (SSE streaming)
+- Calls NVIDIA NIM (gpt-oss-20b, low reasoning effort) via OpenAI-compatible chat completions (SSE streaming)
 - Parses SSE data chunks, strips em-dashes from output, and streams plain text back to the client
 
 ### Shared Hook: useGeneration

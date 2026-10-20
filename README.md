@@ -88,7 +88,7 @@ Open [http://localhost:3000](http://localhost:3000). Or visit the live site at *
 |-------|--------|
 | **Framework** | Next.js 16 (App Router), React 19, TypeScript |
 | **Styling** | Tailwind CSS v4, shadcn/ui |
-| **AI** | NVIDIA NIM, Mistral Small 4 (free tier, streaming) |
+| **AI** | NVIDIA NIM, gpt-oss-20b (free tier, streaming) |
 | **Analytics** | Vercel Web Analytics (anonymous, no cookies) |
 | **Hosting** | Vercel (free tier) |
 

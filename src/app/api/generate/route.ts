@@ -16,7 +16,7 @@ const PROMPT_MAP: Record<string, string> = {
 };
 
 const MAX_MESSAGE_LENGTH = 5000;
-const NVIDIA_MODEL = "mistralai/mistral-small-4-119b-2603";
+const NVIDIA_MODEL = "openai/gpt-oss-20b";
 const NVIDIA_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
 
 // Simple in-memory IP rate limiter (resets on cold start, good enough for abuse prevention)
@@ -96,6 +96,7 @@ export async function POST(req: NextRequest) {
         ],
         temperature: 0.65,
         max_tokens: 2048,
+        reasoning_effort: "low",
         stream: true,
       }),
     });
